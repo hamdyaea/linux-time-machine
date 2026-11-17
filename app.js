@@ -13,7 +13,7 @@ const normalize=value=>{const result=value.startsWith("/")?[]:[...cwd];for(const
 const nodeAt=parts=>{let node=eras[year].files;for(const part of parts){if(!node||typeof node!=="object"||!Object.hasOwn(node,part))return null;node=node[part]}return node;};
 const print=(value,kind="")=>{const line=document.createElement("div");line.className="line "+kind;line.textContent=value;output.append(line);terminal.scrollTop=terminal.scrollHeight;};
 const updatePrompt=()=>{prompt.textContent=promptText();};
-const commands=()=>["help","ls","pwd","cd","cat","echo","clear","date","uname","whoami","history","about","source","timeline","desktop"];
+const commands=()=>["help","ls","pwd","cd","cat","head","grep","wc","echo","printf","clear","date","uname","hostname","id","uptime","env","whoami","history","about","source","timeline","desktop"];
 function execute(line){
  const args=line.trim().split(/\s+/);const command=args[0],target=args[1]||".",node=nodeAt(normalize(target)),era=eras[year];
  switch(command){
@@ -21,6 +21,15 @@ function execute(line){
  case "help":print("Available commands:\n"+commands().join("  ")+"\n\nTry the suggested commands below the terminal.");break;
  case "ls":print(node===null?"ls: no such file or directory":typeof node==="string"?target:Object.keys(node).sort().join("   "));break;
  case "pwd":print(getPath());break;
+ case "hostname":print(year==="2004"?"ubuntu":"linux");break;
+ case "id":print(year==="1991"||year==="1993"?"uid=0(root) gid=0(root)":"uid=1000(visitor) gid=1000(visitor)");break;
+ case "uptime":print("up 0 min, 1 user");break;
+ case "env":print("HOME="+homePath()+"\\nSHELL=/bin/sh\\nPATH=/bin:/usr/bin");break;
+ case "printf":print(args.slice(1).join(" ").replaceAll("\\n","\\n"));break;
+ case "head":{const file=nodeAt(normalize(args.at(-1)||"."));print(typeof file==="string"?file.split("\\n").slice(0,10).join("\\n"):"head: cannot open file");break;}
+ case "wc":{const file=nodeAt(normalize(args.at(-1)||"."));print(typeof file==="string"?file.split("\\n").length+" "+file.trim().split(/\\s+/).length+" "+file.length+" "+args.at(-1):"wc: cannot open file");break;}
+ case "grep":{const pattern=args[1];const file=nodeAt(normalize(args[2]||"."));print(!pattern?"grep: missing pattern":typeof file==="string"?file.split("\\n").filter(x=>x.includes(pattern)).join("\\n"):"grep: cannot open file");break;}
+ case "ls":
  case "cd":{const path=normalize(args[1]||homePath());const dest=nodeAt(path);if(dest&&typeof dest==="object"){cwd=path;updatePrompt()}else print("cd: not a directory");break;}
  case "cat":print(!args[1]?"cat: missing filename":node===null?"cat: file not found":typeof node==="object"?"cat: is a directory":node);break;
  case "echo":print(args.slice(1).join(" "));break;
@@ -69,6 +78,7 @@ function showBanner(){
 function setEra(next){
  if(!Object.hasOwn(eras,next))return;
  year=next;reset();
+ document.querySelectorAll("[data-jump]").forEach(button=>{const selected=button.dataset.jump===year;button.classList.toggle("selected",selected);button.setAttribute("aria-pressed",String(selected));});
  const era=eras[year];
  document.querySelectorAll(".era-card").forEach(button=>{const active=button.dataset.year===year;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});
  $(".portal-year").textContent=year;
@@ -90,5 +100,6 @@ shell.addEventListener("submit",event=>{event.preventDefault();submit(input.valu
 input.addEventListener("keydown",event=>{if(event.ctrlKey&&event.key.toLowerCase()==="l"){event.preventDefault();output.replaceChildren();$("#boot-description").textContent="";return;}if(event.key==="Tab"){event.preventDefault();const value=input.value;const parts=value.split(/\\s+/);const last=parts.pop()||"";const path=normalize(last||".");const parent=nodeAt(path.slice(0,-1));const prefix=path.at(-1)||"";const matches=parent&&typeof parent==="object"?Object.keys(parent).filter(name=>name.startsWith(prefix)):[];if(matches.length===1){parts.push(last.slice(0,last.length-prefix.length)+matches[0]);input.value=parts.join(" ");}else if(matches.length>1){print(matches.join("  "));}return;}if(event.key==="ArrowUp"){event.preventDefault();historyIndex=Math.max(0,historyIndex-1);input.value=history[historyIndex]||"";}else if(event.key==="ArrowDown"){event.preventDefault();historyIndex=Math.min(history.length,historyIndex+1);input.value=history[historyIndex]||"";}});
 $("#reset").addEventListener("click",()=>{reset();showBanner();});
 terminal.addEventListener("click",()=>input.focus());
+document.querySelectorAll("[data-jump]").forEach(button=>button.addEventListener("click",()=>setEra(button.dataset.jump)));
 document.querySelectorAll(".era-card").forEach(button=>button.addEventListener("click",()=>{setEra(button.dataset.year);$("#terminal-section").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});}));
 setEra("1991");
