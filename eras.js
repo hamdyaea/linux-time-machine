@@ -35,7 +35,7 @@ export const eras = {
   intro:"Ubuntu 4.10 launched in October 2004. Linux 2.6 and maturing desktop environments helped Linux reach more everyday users.",
   commands:[["help","List supported commands"],["desktop","Preview the desktop concept"],["cat /etc/issue","Read the login banner"],["ls /home/visitor","Browse the home folder"],["uname -r","Inspect the kernel release"],["timeline","Learn the milestones"]],
   files:{"README":"2004: the modern Linux desktop gathers momentum.",
-  "etc":{"os-release":"NAME=\"Linux Time Machine educational reconstruction\"\nERA=\"2004\"\nNOTE=\"Not a real Ubuntu installation\"","issue":"Ubuntu 4.10 \\n \\l"},
+  "etc":{"issue":"Ubuntu 4.10 (Warty Warthog)","debian_version":"3.1"},
   "home":{"visitor":{"Desktop":{"Start.txt":"A new generation discovers Linux."},"Documents":{"history.txt":"Ubuntu 4.10 was released in October 2004."},"Pictures":{}}},
   "usr":{"share":{"applications":{}}},
   facts:["Ubuntu 4.10 ('Warty Warthog') launched in October 2004.","Linux 2.6 was introduced in late 2003 and widely used in 2004.","Ubuntu 4.10 shipped with the GNOME desktop."]
@@ -45,7 +45,7 @@ export const eras = {
   intro:"Linux powers servers, phones, containers, embedded devices, supercomputers and desktop workstations. Linux continues to evolve across computing platforms.",
   commands:[["help","List supported commands"],["desktop","Preview a modern desktop"],["ls /etc","Inspect system configuration"],["cat /etc/os-release","Read system identification"],["uname -a","Inspect system information"],["timeline","Compare Linux milestones"]],
   files:{"README":"2026: Linux is everywhere.\nModern Linux spans many distributions and environments.",
-  "etc":{"os-release":"NAME=\"Linux Time Machine demo\"\nERA=\"2026\"\nSIMULATED=true","issue":"Linux 2026"},
+  "etc":{"os-release":"NAME=\"Linux\"\nPRETTY_NAME=\"Linux 2026\"","issue":"Linux 2026"},
   "home":{"visitor":{"Desktop":{"Welcome.txt":"Open source keeps evolving."},"Projects":{"README":"Containers, cloud, security and Linux."},"Documents":{}}},
   "usr":{"share":{"applications":{}}},
   facts:["Linux underpins major cloud and container infrastructure.","Linux also runs across embedded systems and mobile devices.","Linux remains central to modern infrastructure."]
