@@ -12,7 +12,7 @@
 - **1993 — Early distributions:** Slackware, Debian, and the command line
 - **1998 — KDE 1.0:** the graphical desktop revolution
 - **2004 — Ubuntu 4.10:** Linux reaches a wider desktop audience
-- **2026 — Modern Linux:** open-source infrastructure and desktop environments
+- **Today — Modern Linux:** open-source infrastructure and desktop environments
 
 The site features an interactive terminal with period-inspired prompts, command history, tab completion, a black-and-green CRT display, a time-travel portal, and commands selected for each era.
 
@@ -52,7 +52,7 @@ Connect the GitHub repository to Cloudflare Pages, select the **main** branch, c
 - Linux kernel source history: https://kernel.googlesource.com/pub/scm/linux/kernel/git/nico/archive/
 - v86 x86 browser emulator: https://github.com/copy/v86
 
-Upcoming work focuses on historically accurate boot environments, richer desktop interactions, expanded command support, and additional milestones.
+The [Linux 0.01 boot engineering track](docs/REAL_KERNEL_BOOT.md) includes a reproducible kernel build workflow and the steps for testing an x86 browser boot. Upcoming work also covers richer desktop interactions, expanded command support, and additional milestones.
 
 ## License
 
