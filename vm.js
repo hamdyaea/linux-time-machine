@@ -7,7 +7,8 @@
   bios:"/vendor/v86/seabios.bin",
   vga:"/vendor/v86/vgabios.bin",
   floppy:"/images/linux-0.01-floppy-1440k.img",
-  disk:"/images/linux-0.01-hda.img.gz"
+  disk:"/images/linux-0.01-hda.img.gz",
+  master:"/images/linux-0.01-ide-master-placeholder.img"
  };
  let vm=null,starting=false,bootTimer=null,diskUrl=null;
  const releaseDisk=()=>{if(diskUrl){URL.revokeObjectURL(diskUrl);diskUrl=null;}};
@@ -49,14 +50,14 @@
    const disk=await loadDisk();
    releaseDisk();
    diskUrl=URL.createObjectURL(new Blob([disk],{type:"application/octet-stream"}));
-   report("Starting authentic x86 guest (8 MiB RAM, floppy boot, decompressed IDE disk)...");
+   report("Starting authentic x86 guest (8 MiB RAM, floppy boot, IDE master placeholder + historical slave disk)...");
    const Emulator=window.V86Starter||window.V86;
    const constructorName=typeof window.V86Starter==="function"?"V86Starter":"V86";
    vm=new Emulator({
     wasm_path:paths.wasm,memory_size:8*1024*1024,vga_memory_size:2*1024*1024,
     screen_container:document.getElementById("screen_container"),
     bios:{url:paths.bios},vga_bios:{url:paths.vga},
-    fda:{url:paths.floppy},hdb:{url:diskUrl},boot_order:0x213,autostart:true
+    fda:{url:paths.floppy},hda:{url:paths.master},hdb:{url:diskUrl},boot_order:0x213,autostart:true
    });
    bootTimer=setTimeout(()=>{
     bootTimer=null;
