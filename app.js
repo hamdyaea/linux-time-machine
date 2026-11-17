@@ -52,7 +52,7 @@ const banners={
  "1991":["Linux version 0.01","Memory: 4096k available","tty0: console ready",""],
  "1993":["Slackware Linux 1.0","Linux 0.99.13 (i386)","login: root","Last login: Thu Jul 22 09:14:00 on tty1",""],
  "1998":["Linux 2.0.36 (i386)","Welcome to Linux","Last login: Tue Jul 14 10:25:00 on tty1",""],
- "2004":["Ubuntu 4.10 \\n \\l","Linux 2.6.8 (i386)","Last login: Wed Oct 20 08:30:00 on tty1",""],
+ "2004":["Ubuntu 4.10 (Warty Warthog)","Linux 2.6.8 (i386)","Last login: Wed Oct 20 08:30:00 on tty1",""],
  "2026":["Linux 6.x (x86_64)","Last login: Mon Nov 16 10:21:00 on tty1",""]
 };
 // Era banners are presentation text, not kernel-generated boot logs.
@@ -76,7 +76,12 @@ function setEra(next){
  $("#console-description").textContent=era.intro;
  $("#console-identifier").textContent="CHRONO_TERMINAL // "+era.title;
  $("#console-destination").textContent="DESTINATION: "+year;
- $("#boot-description").textContent="Destination: "+era.context+"\nSystem: "+era.title+"\n\nType help for available commands.\n\n";
+ $("#console-shell").dataset.era=year;
+ $("#console-shell").classList.remove("is-booting");
+ void $("#console-shell").offsetWidth;
+ $("#console-shell").classList.add("is-booting");
+ $("#terminal-status").textContent=year==="1991"?"◉ tty0 · 80×25":year==="1993"?"◉ tty1 · 80×25":year==="2026"?"◉ pts/0 · UTF-8":"◉ tty1 · 80×25";
+ showBanner();
  tips.replaceChildren();era.commands.forEach(([command,description])=>{const button=document.createElement("button");button.type="button";button.className="command-tip";const code=document.createElement("code");code.textContent=command;const detail=document.createElement("span");detail.textContent=description;button.append(code,detail);button.addEventListener("click",()=>{submit(command);input.focus()});tips.append(button);});
  facts.replaceChildren();era.facts.forEach(item=>{const li=document.createElement("li");li.textContent=item;facts.append(li);});
  renderDesktop(era);
