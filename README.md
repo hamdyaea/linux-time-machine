@@ -54,3 +54,14 @@ The vehicle, portal, dashboard, and time-travel visual identity are original gen
 Linux is a trademark of Linus Torvalds. This is an independent educational project, not affiliated with Linus Torvalds, the Linux Foundation, or any motion picture franchise.
 
 Created as part of the [Daylight Linux](https://daylightlinux.ch) ecosystem.
+
+## Real historical kernel boot: feasibility work
+
+The next milestone is a **real guest kernel**, not a JavaScript shell with a changed version string.
+
+- **1991 / Linux 0.01:** original source: https://kernel.googlesource.com/pub/scm/linux/kernel/git/nico/archive/+/v0.01 . The release depends on period-specific i386 hardware assumptions and an early MINIX-compatible bootstrap/userspace. Build a reproducible kernel + filesystem + boot image first, validate it under a known-working PC emulator, then test browser-based x86 emulation. A QEMU-compatible disk image does **not** automatically boot in v86. Avoid claiming native Linux 0.01 boot until an actual browser test passes.
+- **Emulator candidate:** https://github.com/copy/v86 (x86-to-WebAssembly browser PC emulator). Its documented compatibility is useful for 32-bit Linux, but Linux 0.01 is not documented as supported.
+- **Reference implementation for research:** https://github.com/FermiHart/linux-0.01-still-runs includes an original-derived kernel with modern compatibility adaptations; its KVM-specific boot method is not directly usable in browsers.
+- **Later eras:** source and validate redistributable period-correct 32-bit disk images, include license/source provenance, and host immutable image assets on Cloudflare-compatible storage. Never substitute Tiny Core for a 1991 kernel and label it Linux 0.01.
+
+Current deployment: interactive historical terminal UI. **No actual guest kernel image or v86 runtime has been integrated or verified yet.** This distinction belongs in project documentation, not inside the terminal session.
