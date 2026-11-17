@@ -33,3 +33,31 @@ The front end can remain on Cloudflare Pages. Place verified boot media and v86 
 ## Status
 
 The **build workflow** is committed. No successful Linux 0.01 guest boot has been verified in the ChatGPT environment: this environment has neither a working network git clone nor QEMU/Docker. A browser VM must not be presented as running Linux 0.01 until the boot test actually succeeds.
+
+## Browser proof of concept (added)
+
+The dedicated test harness is `vm.html` + `vm.js`. It passes the **same boot floppy and IDE disk** from the upstream Docker QEMU runtime into v86 and uses 8 MiB RAM. It intentionally renders only the emulator's actual VGA output.
+
+On your Linux workstation:
+
+```bash
+cd ~/Téléchargements/linux-time-machine
+git pull --ff-only
+bash scripts/prepare-browser-images.sh
+
+# Clone and build the upstream browser emulator using its current documented build instructions:
+git clone https://github.com/copy/v86.git .work/v86
+cd .work/v86
+# Follow https://github.com/copy/v86#build for required toolchain and build steps.
+# The staging script requires build/libv86.js, build/v86.wasm,
+# bios/seabios.bin and bios/vgabios.bin.
+cd ../..
+bash scripts/stage-v86.sh .work/v86
+python3 -m http.server 8000
+```
+
+Open **http://localhost:8000/vm.html**. Press **POWER ON** and inspect actual VGA output.
+
+If the VM fails to boot, inspect the developer console and compare QEMU's floppy and IDE configuration with v86 device support. Linux 0.01 may require v86 CPU/BIOS fixes. A successful QEMU boot is not proof of a successful v86 boot.
+
+**Deployment:** the images and emulator binary are deliberately gitignored (the IDE disk may be large). They must be explicitly packaged with the Cloudflare Pages deployment output after a successful browser test. Until then, the public `vm.html` is a development harness and may report missing assets.
