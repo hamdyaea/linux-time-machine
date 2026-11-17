@@ -39,7 +39,8 @@
     const type=response.headers.get("content-type")||"unknown";
     if(!response.ok)throw Error("v86 JavaScript HTTP "+response.status+" at "+url);
     if(type.includes("text/html"))throw Error("v86 JavaScript URL returned HTML instead of JS: "+url);
-    throw Error("v86 JavaScript fetched (HTTP "+response.status+", "+type+") but V86Starter is undefined. Check browser Console for CSP or runtime errors.");
+    const issues=(window.__v86LoadErrors||[]).slice(-4).join(" | ");
+    throw Error("v86 JavaScript fetched (HTTP "+response.status+", "+type+") but V86Starter is undefined."+(issues?" Browser errors: "+issues:" Check F12 Console and Network response for script content."));
    }
    report("Checking v86 emulator and Linux 0.01 boot assets...");
    await Promise.all(Object.values(paths).map(verify));
