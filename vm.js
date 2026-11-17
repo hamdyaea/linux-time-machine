@@ -1,43 +1,58 @@
-/* Browser x86 guest. No fake boot output: all screen output comes from v86. */
+/* Authentic Linux 0.01-compatible guest; screen output is produced by v86. */
 (() => {
  "use strict";
  const start=document.getElementById("start"),stop=document.getElementById("stop"),status=document.getElementById("status");
- let vm=null;
- const paths=[
-  "/vendor/v86/v86.wasm",
-  "/vendor/v86/seabios.bin",
-  "/vendor/v86/vgabios.bin",
-  "/images/linux-0.01-floppy.img",
-  "/images/linux-0.01-hda.img"
- ];
+ const paths={
+  wasm:"/vendor/v86/v86.wasm",
+  bios:"/vendor/v86/seabios.bin",
+  vga:"/vendor/v86/vgabios.bin",
+  floppy:"/images/linux-0.01-floppy.img",
+  disk:"/images/linux-0.01-hda.img.gz"
+ };
+ let vm=null,starting=false;
  const report=message=>{status.textContent=message;};
  async function verify(path){
-  const r=await fetch(path,{method:"HEAD",cache:"no-store"});
-  if(!r.ok)throw Error(path+" returned HTTP "+r.status);
-  const type=r.headers.get("content-type")||"";
-  if(type.includes("text/html"))throw Error(path+" returned HTML, not a binary asset");
+  const response=await fetch(path,{method:"HEAD",cache:"no-store"});
+  if(!response.ok)throw Error(path+" returned HTTP "+response.status);
+  if((response.headers.get("content-type")||"").includes("text/html"))throw Error(path+" returned HTML, not an emulator asset");
+ }
+ async function loadDisk(){
+  if(typeof DecompressionStream!=="function")throw Error("This browser does not support DecompressionStream('gzip'). Try an updated Chromium or Firefox.");
+  report("Downloading compressed historical disk (4.4 MB)...");
+  const response=await fetch(paths.disk,{cache:"no-store"});
+  if(!response.ok||!response.body)throw Error("Disk download failed: HTTP "+response.status);
+  if((response.headers.get("content-type")||"").includes("text/html"))throw Error("Disk URL returned HTML");
+  report("Decompressing Linux 0.01 IDE disk in browser memory...");
+  const decompressed=response.body.pipeThrough(new DecompressionStream("gzip"));
+  const buffer=await new Response(decompressed).arrayBuffer();
+  if(buffer.byteLength!==40*1024*1024 && buffer.byteLength!==40_000_000)
+   throw Error("Unexpected disk image size: "+buffer.byteLength+" bytes");
+  return new Uint8Array(buffer);
  }
  start.addEventListener("click",async()=>{
-  start.disabled=true;report("Checking x86 emulator and disk images...");
+  if(starting||vm)return;
+  starting=true;start.disabled=true;
   try{
    if(typeof window.V86Starter!=="function")throw Error("Missing /vendor/v86/libv86.js");
-   await Promise.all(paths.map(verify));
-   report("Starting x86 PC (8 MiB RAM, floppy boot, IDE hard disk)...");
+   report("Checking v86 emulator and Linux 0.01 boot assets...");
+   await Promise.all(Object.values(paths).map(verify));
+   const disk=await loadDisk();
+   report("Starting authentic x86 guest (8 MiB RAM, floppy boot, decompressed IDE disk)...");
    vm=new window.V86Starter({
-    wasm_path:paths[0],
-    memory_size:8*1024*1024,
-    vga_memory_size:2*1024*1024,
+    wasm_path:paths.wasm,memory_size:8*1024*1024,vga_memory_size:2*1024*1024,
     screen_container:document.getElementById("screen_container"),
-    bios:{url:paths[1]},
-    vga_bios:{url:paths[2]},
-    fda:{url:paths[3]},
-    hda:{url:paths[4]},
-    boot_order:0x132,
-    autostart:true
+    bios:{url:paths.bios},vga_bios:{url:paths.vga},
+    fda:{url:paths.floppy},hda:{buffer:disk},boot_order:0x132,autostart:true
    });
-   vm.add_listener("emulator-ready",()=>{report("PC running. Click the screen and use your keyboard.");stop.disabled=false;});
-   vm.add_listener("emulator-stopped",()=>{report("PC powered off.");start.disabled=false;stop.disabled=true;});
-  }catch(e){report("Unable to start: "+e.message);start.disabled=false;}
+   vm.add_listener("emulator-ready",()=>{report("x86 emulator running. Click the guest screen and use your keyboard.");stop.disabled=false;});
+   vm.add_listener("emulator-stopped",()=>{report("PC powered off.");start.disabled=false;stop.disabled=true;vm=null;});
+  }catch(error){
+   report("Unable to start: "+error.message);start.disabled=false;
+   if(vm){try{vm.destroy();}catch{}vm=null;}
+  }finally{starting=false;}
  });
- stop.addEventListener("click",()=>{if(vm){vm.stop();vm.destroy();vm=null;}stop.disabled=true;start.disabled=false;report("PC powered off.");});
+ stop.addEventListener("click",()=>{
+  if(vm){try{vm.stop();vm.destroy();}catch{}vm=null;}
+  stop.disabled=true;start.disabled=false;report("PC powered off.");
+ });
 })();
