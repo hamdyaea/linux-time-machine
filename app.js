@@ -1,4 +1,4 @@
-import { eras } from "./eras.js?v=20261117-chronodeck11";
+import { eras } from "./eras.js?v=20261117-eras12";
 
 // Browser-based historical shell interfaces. See README for implementation scope.
 let year="1991",cwd=[],history=[],historyIndex=0,bootToken=0;
@@ -53,7 +53,7 @@ function renderDesktop(era){
  const bar=document.createElement("div");bar.className="desktop-bar";bar.textContent=year==="1998"?"K • File  Edit  View  Help":year==="2004"?"Applications    Places    System":"◈   Activities     Files     Terminal";
  const window=document.createElement("div");window.className="desktop-window";
  const title=document.createElement("div");title.className="desktop-window-title";title.textContent="Welcome — "+year+"  ◻ ×";
- const content=document.createElement("div");content.className="desktop-window-content";content.textContent=year==="1998"?"Graphical Linux enters a new era.":year==="2004"?"Linux becomes a desktop option for more people.":"Linux powers the modern world.";
+ const content=document.createElement("div");content.className="desktop-window-content";content.textContent=year==="1998"?"Graphical Linux enters a new era.":year==="2004"?"Linux becomes a desktop option for more people.":year==="2010"?"Linux powers cloud infrastructure and mobile devices.":year==="2015"?"Containers change how applications are delivered.":year==="2020"?"Cloud-native Linux scales across infrastructure.":year==="2024"?"Linux 6.x advances modern systems.":"Linux powers the modern world.";
  window.append(title,content);scene.append(bar,window);preview.append(scene);
 }
 const banners={
@@ -61,6 +61,10 @@ const banners={
  "1993":["Slackware Linux 1.0","Linux 0.99.13 (i386)","login: root",""],
  "1998":["Linux 2.0.36 (i386)","Welcome to Linux",""],
  "2004":["Ubuntu 4.10 (Warty Warthog)","Linux 2.6.8 (i386)",""],
+ "2010":["Linux 2.6.35 (i686)","Cloud and mobile systems online",""],
+ "2015":["Linux 4.2 (x86_64)","Container runtime ready",""],
+ "2020":["Linux 5.10 (x86_64)","Cloud-native infrastructure ready",""],
+ "2024":["Linux 6.6 (x86_64)","Modern Linux workstation ready",""],
  "today":["Linux (x86_64)",""]
 };
 // Era banners are presentation text, not kernel-generated boot logs.
