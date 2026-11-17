@@ -33,7 +33,14 @@
   if(starting||vm)return;
   starting=true;start.disabled=true;
   try{
-   if(typeof window.V86Starter!=="function")throw Error("Missing /vendor/v86/libv86.js");
+   if(typeof window.V86Starter!=="function"){
+    const url="/vendor/v86/libv86.js";
+    const response=await fetch(url,{cache:"no-store"});
+    const type=response.headers.get("content-type")||"unknown";
+    if(!response.ok)throw Error("v86 JavaScript HTTP "+response.status+" at "+url);
+    if(type.includes("text/html"))throw Error("v86 JavaScript URL returned HTML instead of JS: "+url);
+    throw Error("v86 JavaScript fetched (HTTP "+response.status+", "+type+") but V86Starter is undefined. Check browser Console for CSP or runtime errors.");
+   }
    report("Checking v86 emulator and Linux 0.01 boot assets...");
    await Promise.all(Object.values(paths).map(verify));
    const disk=await loadDisk();
