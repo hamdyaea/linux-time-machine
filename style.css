@@ -65,3 +65,17 @@
 @keyframes screen-wake{0%{filter:brightness(2);transform:scaleY(.02)}45%{filter:brightness(1.5);transform:scaleY(1)}100%{filter:brightness(1);transform:scaleY(1)}}
 @media(max-width:650px){.console-shell{border-width:5px}.terminal{font-size:12px;height:410px;padding:15px 12px}.console-meta,.console-footer{font-size:9px}.console-top{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.console-shell.is-booting .terminal{animation:none}}
+
+/* First-screen destination console */
+.console-featured{padding-top:22px;margin-top:0;scroll-margin-top:90px}
+.console-featured .section-heading{margin-bottom:18px}
+.console-featured .section-heading h2{font-size:clamp(28px,3.2vw,44px)}
+.console-featured .section-heading p{max-width:540px}
+.console-featured .terminal{height:390px}
+.quick-years{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:0 0 15px;padding:12px 14px;background:#091923;border:1px solid #2b4b5d}
+.quick-years span{font:700 11px 'Chakra Petch',sans-serif;color:#8ab4c5;letter-spacing:.13em;margin-right:12px}
+.quick-years button{border:1px solid #3b6070;background:#102532;color:#b2d6df;padding:9px 17px;cursor:pointer;font:700 13px 'Chakra Petch',sans-serif;transition:background .2s,color .2s,box-shadow .2s}
+.quick-years button:hover,.quick-years button:focus-visible,.quick-years button.selected{background:#00d8c1;color:#051820;border-color:#00d8c1;box-shadow:0 0 17px #00d8c144}
+.console-featured .command-guide{margin-top:15px}
+.console-featured .desktop-preview{padding-top:10px}
+@media(max-width:650px){.console-featured .terminal{height:340px}.quick-years button{padding:8px 11px}.quick-years span{width:100%}}
