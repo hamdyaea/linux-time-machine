@@ -65,3 +65,27 @@ Copyright © 2026 **Hamdy Abou El Anein** and contributors.
 Released under the [MIT License](LICENSE). Historical third-party software, distribution images, and trademarks remain subject to their respective rights and licenses.
 
 Linux is a trademark of Linus Torvalds. Linux Time Machine is an independent open-source project.
+
+## Real historical kernels (priority)
+
+The early text-only eras should eventually boot period-correct Linux kernels, with matching root filesystems, directly in the browser. The current JavaScript historical shell is **not a real kernel** and must not be mistaken for one.
+
+| Era | Real-kernel progress |
+| --- | --- |
+| 1991 | Linux 0.01-derived compatibility port boots in QEMU on the developer workstation. v86/browser boot **not verified**. |
+| 1993 | Matching kernel and Slackware/Debian root filesystem **not prepared**. |
+| 1998 onward | Interactive desktop/history experiences; authentic VM images may be added only after technical and licensing review. |
+
+The 1991 experimental guest requires a boot floppy, a matching IDE root disk, v86 WebAssembly, SeaBIOS and VGA BIOS. All binaries are gitignored and therefore **not present in a standard Cloudflare Pages Git deployment**.
+
+Build and test the guest following [the real-kernel boot guide](docs/REAL_KERNEL_BOOT.md). After the local v86 test succeeds, run:
+
+```bash
+bash scripts/package-real-kernel-site.sh
+cd .work/pages-dist
+python3 -m http.server 8000
+```
+
+Open `http://localhost:8000/vm.html?era=1991` and validate that the guest boots and accepts shell commands. Only then deploy the bundled static output with an appropriate Cloudflare Pages direct-upload process. Replacing the deployment workflow requires care: a Git-connected Pages project does not automatically include local generated images.
+
+Historical kernel claims are based on the actual booted binary, not on the displayed `uname` text alone.
