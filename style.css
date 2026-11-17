@@ -120,3 +120,35 @@
 @media(max-width:650px){.profile-hero{padding:45px 22px;min-height:0}.profile-hero h1{font-size:42px}.profile-panel{padding:24px}.header-links a[href="/about.html"]{display:none}.machine-scene{border-width:7px}.cockpit-gauge{transform:scale(.7);transform-origin:top right}}
 
 .temporal-gallery{margin:20px 0 65px;padding:18px;background:linear-gradient(145deg,#0d202b,#07111c);border:1px solid #315e70;box-shadow:0 15px 50px #0009}.temporal-gallery img{display:block;width:100%;height:auto;margin-top:16px;border:1px solid #356070;border-radius:9px}.temporal-gallery-caption{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.14em;color:#7fd5e7}
+
+/* CHRONODECK 11 — interactive cockpit inspired by the approved concept artwork */
+.chrono-dashboard{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 238px;grid-template-rows:auto minmax(0,1fr) auto;column-gap:18px;padding:22px;background:radial-gradient(ellipse at 50% 10%,#164f66,#07131d 60%,#040a0f),repeating-linear-gradient(90deg,#a676401a 0 2px,transparent 2px 24px);border:12px ridge #7c8388;border-radius:28px;box-shadow:inset 0 0 0 4px #d39b61,inset 0 0 0 9px #122b36,0 25px 65px #000c,0 0 45px #03ccff28;isolation:isolate}
+.chrono-dashboard:before{content:"";position:absolute;inset:8px;border:1px solid #dcab72;border-radius:16px;pointer-events:none;z-index:3;box-shadow:inset 0 0 0 3px #12212b}
+.chrono-banner{grid-column:1/-1;display:flex;align-items:center;gap:18px;min-height:110px;padding:18px 26px;margin-bottom:18px;border:2px solid #27768c;border-radius:13px;background:radial-gradient(ellipse at 50% 100%,#096486,#03121d 75%);box-shadow:inset 0 0 35px #05d9ff2a,0 0 20px #00d9ff22}
+.chrono-emblem{display:grid;place-items:center;flex:0 0 65px;width:65px;height:65px;border:7px double #e5a35f;border-radius:50%;background:#052535;color:#00e9ff;font-size:35px;box-shadow:0 0 22px #00e9ff6b}
+.chrono-banner strong{display:block;color:#e8faff;text-shadow:0 0 24px #00cfff;font:700 clamp(22px,3.2vw,40px) 'Chakra Petch',sans-serif;letter-spacing:.02em}
+.chrono-banner small{display:block;margin-top:6px;color:#7de2ff;font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.18em}
+.chrono-power{margin-left:auto;white-space:nowrap;color:#77f5d1;font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.08em}
+.chrono-side{grid-column:2;grid-row:2;display:flex;flex-direction:column;gap:16px;padding:16px;border:7px ridge #7b858c;border-radius:18px;background:linear-gradient(160deg,#091f2f,#020b15);box-shadow:inset 0 0 30px #000,0 0 20px #00dfff1a}
+.chrono-side-title{text-align:center;color:#a3e8ff;font:700 16px 'Chakra Petch',sans-serif;letter-spacing:.07em}
+.chrono-side .quick-years{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;background:none;border:0}
+.chrono-side .quick-years>span{display:none}
+.chrono-side .quick-years button{display:block;width:100%;min-height:54px;text-align:left;padding:10px 14px;background:linear-gradient(130deg,#0b263b,#071421);border:1px solid #42788e;border-radius:7px;color:#c5e9f5;font:700 20px 'Chakra Petch',sans-serif;box-shadow:inset 0 0 12px #03ccff0a;transition:box-shadow .2s,border-color .2s,transform .2s}
+.chrono-side .quick-years button:hover{border-color:#0be3ff;transform:translateX(-3px)}
+.chrono-side .quick-years button.selected{color:#fff;border-color:#00e8ff;background:linear-gradient(130deg,#0b6288,#063047);box-shadow:0 0 19px #00d9ff88,inset 0 0 20px #00d9ff2b;text-shadow:0 0 13px #00e8ff}
+.chrono-side-gauge{display:flex;flex-direction:column;align-items:center;justify-content:center;align-self:center;width:160px;height:160px;border:12px ridge #a18d7b;border-radius:50%;background:radial-gradient(circle,#14536a,#021019 73%);box-shadow:0 0 0 4px #a87040,inset 0 0 24px #00cfff33,0 0 24px #00d9ff44;font:600 10px 'Chakra Petch',sans-serif;color:#9ce9ff;text-align:center}
+.chrono-side-gauge strong{font-size:42px;color:#fff;text-shadow:0 0 20px #00dfff}.chrono-side-gauge small{font-size:9px;color:#f0ae65}
+.chrono-side-status{display:grid;grid-template-columns:1fr auto;gap:9px;padding:14px 5px;border-top:1px solid #315468;font:600 10px 'Chakra Petch',sans-serif;color:#7098aa}.chrono-side-status b{color:#00efc8}
+.chrono-main{grid-column:1;grid-row:2;min-width:0;border:10px ridge #6b7c86;border-radius:20px;background:#02070b;box-shadow:0 0 0 4px #b68a5a,0 0 28px #00dfff22,inset 0 0 40px #000;overflow:hidden}
+.chrono-screen-label{display:flex;justify-content:space-between;gap:12px;padding:9px 15px;background:#102c39;color:#6ed9f0;font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.12em}
+.chrono-screen-label span:last-child{color:#5ff7c7}
+.chrono-main .console-shell{border:0;border-radius:0;background:#000;box-shadow:none}
+.chrono-main .console-top{background:#0b1a21;border-bottom-color:#244c55}
+.chrono-main .console-meta,.chrono-main .console-footer{background:#06151a}
+.chrono-main .terminal{min-height:390px;height:clamp(390px,40vw,500px);background:radial-gradient(ellipse at center,#031911,#000 78%);color:#aaffb7;text-shadow:0 0 5px #00ef8d35;font-size:14px;line-height:1.65;white-space:pre-wrap;position:relative}
+.chrono-main .terminal:before{content:"";position:sticky;display:block;pointer-events:none;inset:0;height:0}
+.chrono-main .boot{color:#80e2b3}.chrono-main #prompt,.chrono-main .entered{color:#4bff96}.chrono-main #command{color:#d7ffea;caret-color:#00ff8c}.chrono-main .line{color:#b6efce}
+.chrono-bottom{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px;padding:15px 20px;background:linear-gradient(90deg,#102d3c,#051823,#102d3c);border:2px solid #8c6a4c;border-radius:9px;color:#e8ae73;font:700 11px 'Chakra Petch',sans-serif;letter-spacing:.09em;text-shadow:0 0 12px #ff9d4e55}
+.chrono-bottom span:nth-child(2){color:#00e2ff;text-shadow:0 0 13px #00cfff}
+@media(max-width:900px){.chrono-dashboard{grid-template-columns:minmax(0,1fr);padding:15px}.chrono-main{grid-column:1;grid-row:2}.chrono-side{grid-column:1;grid-row:3;margin-top:18px}.chrono-side .quick-years{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.chrono-side .quick-years button{text-align:center;font-size:clamp(12px,2.3vw,18px);min-height:48px;padding:8px 3px}.chrono-side-gauge,.chrono-side-status{display:none}.chrono-bottom{grid-row:4}.chrono-power{display:none}}
+@media(max-width:650px){.chrono-dashboard{border-width:6px;border-radius:17px;padding:10px}.chrono-banner{min-height:75px;padding:10px;gap:10px}.chrono-emblem{width:43px;height:43px;flex-basis:43px;font-size:24px;border-width:4px}.chrono-banner strong{font-size:clamp(17px,4vw,25px)}.chrono-banner small{font-size:7px}.chrono-main{border-width:5px}.chrono-main .terminal{min-height:330px;height:360px;font-size:12px}.chrono-screen-label{font-size:8px}.chrono-side{padding:10px;border-width:4px}.chrono-bottom{font-size:8px;padding:12px}.chrono-bottom span:nth-child(2){display:none}}
