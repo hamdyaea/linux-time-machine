@@ -170,3 +170,14 @@
 .real-linux-hint{margin:10px 4px 4px;color:#92cbaa;font:12px/1.6 monospace}
 .real-linux-hint a{color:#68e4b0}
 @media(max-width:650px){.real-linux-home{padding:4px}.real-linux-home iframe{height:540px}}
+
+/* Native v86 guest on the homepage: no nested vm.html interface. */
+.real-linux-toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:10px 12px;background:#091a1c;color:#84e5c0;font:700 11px/1.5 monospace;letter-spacing:.04em}
+.real-linux-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.real-linux-controls button,.real-linux-controls a{border:1px solid #347b60;background:#103529;color:#b8fbd8;padding:7px 10px;font:700 11px monospace;cursor:pointer;text-decoration:none}
+.real-linux-controls button:disabled{opacity:.4;cursor:not-allowed}
+.real-linux-screen{position:relative;min-height:440px;height:clamp(440px,43vw,620px);background:#000;color:#c5e6d5;border:1px solid #285d42;overflow:auto;outline:0;font:15px/1.25 monospace}
+.real-linux-screen canvas{max-width:100%;height:auto}
+.real-linux-screen>div{white-space:pre}
+.real-linux-status{margin:8px 4px;color:#8ecaa7;font:12px/1.5 monospace;white-space:pre-wrap}
+@media(max-width:650px){.real-linux-screen{min-height:360px;height:430px}.real-linux-toolbar{font-size:10px}}
