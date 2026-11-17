@@ -9,7 +9,7 @@
 
 - Original 2027-style time-travel interface: neon cyan, copper, sci-fi portal and an original generic futuristic vehicle illustration (all CSS; no movie assets)
 - Interactive 1991 educational shell reconstruction
-- Timeline from 1991 to modern Linux, with future chapters labeled *coming soon*
+- Five selectable educational eras: 1991, 1993, 1998, 2004, and 2026\n- Era-specific simulated filesystems, historical context, commands, and clickable command suggestions\n- Original illustrative desktop concepts for 1998, 2004, and 2026 (not real historical desktops)
 - Responsive layout, keyboard command history, reduced-motion support
 - No backend or server-side computation required
 
@@ -38,8 +38,8 @@ HTML, CSS, vanilla JavaScript. Google Fonts provides optional typography with sy
 
 ## Roadmap
 
-1. Explore original Linux 0.01 source accurately, with documented references.
-2. Recreate classic Linux desktop environments in original web UI components.
+1. Improve historical references and verify every sample against original releases.
+2. Expand desktop concepts into interactive windows, menus, and applications.
 3. Evaluate an optional real Linux browser VM using v86 and a small compatible guest (Tiny Core is a candidate, not integrated yet).
 4. Expand the timeline and interactive experiences.
 
