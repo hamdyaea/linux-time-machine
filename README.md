@@ -12,6 +12,10 @@
 - **1993 — Early distributions:** Slackware, Debian, and the command line
 - **1998 — KDE 1.0:** the graphical desktop revolution
 - **2004 — Ubuntu 4.10:** Linux reaches a wider desktop audience
+- **2010 — Cloud and mobile:** Android, virtualization and emerging cloud platforms
+- **2015 — Container revolution:** Docker, Kubernetes and application portability
+- **2020 — Cloud native:** eBPF, observability and infrastructure at scale
+- **2024 — Linux 6.x:** Modern kernel development and Rust support
 - **Today — Modern Linux:** open-source infrastructure and desktop environments
 
 The site features an interactive terminal with period-inspired prompts, command history, tab completion, a black-and-green CRT display, a time-travel portal, and commands selected for each era.
