@@ -33,20 +33,21 @@
   if(starting||vm)return;
   starting=true;start.disabled=true;
   try{
-   if(typeof window.V86Starter!=="function"){
+   if(typeof window.V86Starter!=="function" && typeof window.V86!=="function"){
     const url="/vendor/v86/libv86.js";
     const response=await fetch(url,{cache:"no-store"});
     const type=response.headers.get("content-type")||"unknown";
     if(!response.ok)throw Error("v86 JavaScript HTTP "+response.status+" at "+url);
     if(type.includes("text/html"))throw Error("v86 JavaScript URL returned HTML instead of JS: "+url);
     const issues=(window.__v86LoadErrors||[]).slice(-4).join(" | ");
-    throw Error("v86 JavaScript fetched (HTTP "+response.status+", "+type+") but V86Starter is undefined."+(issues?" Browser errors: "+issues:" Check F12 Console and Network response for script content."));
+    throw Error("v86 JavaScript fetched (HTTP "+response.status+", "+type+") but neither V86Starter nor V86 is available."+(issues?" Browser errors: "+issues:" Check F12 Console and Network response for script content."));
    }
    report("Checking v86 emulator and Linux 0.01 boot assets...");
    await Promise.all(Object.values(paths).map(verify));
    const disk=await loadDisk();
    report("Starting authentic x86 guest (8 MiB RAM, floppy boot, decompressed IDE disk)...");
-   vm=new window.V86Starter({
+   const Emulator=window.V86Starter||window.V86;
+   vm=new Emulator({
     wasm_path:paths.wasm,memory_size:8*1024*1024,vga_memory_size:2*1024*1024,
     screen_container:document.getElementById("screen_container"),
     bios:{url:paths.bios},vga_bios:{url:paths.vga},
