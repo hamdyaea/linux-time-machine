@@ -1,39 +1,68 @@
-// Linux 0.01 educational reconstruction. This is NOT a real shell or kernel.
-const file = content => ({type:"file",content});
-const dir = children => ({type:"dir",children});
-const root=dir({
- README:file("Linux 0.01 — September 1991\n\nThis is an educational reconstruction, not a running Linux 0.01 kernel.\nOriginal sources: https://www.kernel.org/pub/linux/kernel/Historic/\n\nTry: ls, cd kernel, cat README, pwd, uname, help"),
- boot:dir({"boot.s":file("Historical source placeholder. Consult the original archive for authentic code.")}),
- fs:dir({README:file("Filesystem implementation sources (simplified representation).")}),
- include:dir({README:file("Header files (simplified representation).")}),
- init:dir({"main.c":file("Historical source placeholder. Consult the original archive.")}),
- kernel:dir({README:file("Kernel sources: scheduling, traps, and system calls."),"sched.c":file("Historical source placeholder. Consult the original archive.")}),
- lib:dir({}),mm:dir({}),tools:dir({})
-});
-let cwd=[],history=[],position=0;
-const term=document.querySelector("#terminal"),output=document.querySelector("#output"),input=document.querySelector("#command"),prompt=document.querySelector("#prompt");
-const path=()=>"/"+cwd.join("/");
-const normalize=(p)=>{const result=p.startsWith("/")?[]:[...cwd];for(const part of p.split("/")){if(!part||part===".")continue;if(part==="..")result.pop();else result.push(part)}return result};
-const get=(parts)=>{let node=root;for(const part of parts){if(node.type!=="dir")return null;node=node.children[part];if(!node)return null}return node};
-const print=(message,cls="")=>{const element=document.createElement("div");element.className="line "+cls;element.textContent=message;output.append(element);term.scrollTop=term.scrollHeight};
-const run=(line)=>{const args=line.trim().split(/\s+/),cmd=args[0],target=args[1]||".",node=get(normalize(target));switch(cmd){
-case "":break;
-case "help":print("Commands: help, ls, pwd, cd, cat, echo, clear, date, uname, whoami, history, about, source");break;
-case "ls":print(!node?"ls: no such file or directory":node.type==="file"?target:Object.keys(node.children).sort().join("   "));break;
-case "pwd":print(path());break;
-case "cd":{const p=normalize(args[1]||"/"),n=get(p);if(n?.type==="dir")cwd=p;else print("cd: not a directory");break}
-case "cat":print(!args[1]?"cat: missing filename":!node?"cat: file not found":node.type==="dir"?"cat: is a directory":node.content);break;
-case "echo":print(args.slice(1).join(" "));break;
-case "clear":output.replaceChildren();break;
-case "date":print(new Date().toString()+" (visitor device clock)");break;
-case "uname":print("Linux 0.01 (simulated — not a real kernel)");break;
-case "whoami":print("visitor");break;
-case "history":print(history.map((h,i)=>(i+1)+"  "+h).join("\n"));break;
-case "about":print("Linux Time Machine: an independent, educational reconstruction of the 1991 Linux 0.01 era.");break;
-case "source":print("https://www.kernel.org/pub/linux/kernel/Historic/");break;
-default:print(cmd+": command not found (simulated shell)");
-}};
-document.querySelector("#shell").addEventListener("submit",event=>{event.preventDefault();const line=input.value;print("visitor@linux1991:"+path()+"$ "+line,"entered");if(line.trim()){history.push(line);position=history.length}run(line);input.value="";prompt.textContent="visitor@linux1991:"+path()+"$";term.scrollTop=term.scrollHeight});
-input.addEventListener("keydown",event=>{if(event.key==="ArrowUp"){event.preventDefault();position=Math.max(0,position-1);input.value=history[position]||""}else if(event.key==="ArrowDown"){event.preventDefault();position=Math.min(history.length,position+1);input.value=history[position]||""}});
-document.querySelector("#reset").addEventListener("click",()=>{cwd=[];history=[];position=0;output.replaceChildren();input.value="";prompt.textContent="visitor@linux1991:/$";input.focus()});
-term.addEventListener("click",()=>input.focus());
+import { eras } from "./eras.js";
+
+// Every environment is an educational reconstruction, not a real OS.
+let year="1991",cwd=[],history=[],historyIndex=0;
+const $=selector=>document.querySelector(selector);
+const terminal=$("#terminal"),output=$("#output"),input=$("#command"),prompt=$("#prompt");
+const shell=$("#shell"),tips=$("#command-tips"),facts=$("#era-facts"),preview=$("#desktop-preview");
+const getPath=()=>"/"+cwd.join("/");
+const normalize=value=>{const result=value.startsWith("/")?[]:[...cwd];for(const part of value.split("/")){if(!part||part===".")continue;if(part==="..")result.pop();else result.push(part)}return result;};
+const nodeAt=parts=>{let node=eras[year].files;for(const part of parts){if(!node||typeof node!=="object"||!Object.hasOwn(node,part))return null;node=node[part]}return node;};
+const print=(value,kind="")=>{const line=document.createElement("div");line.className="line "+kind;line.textContent=value;output.append(line);terminal.scrollTop=terminal.scrollHeight;};
+const updatePrompt=()=>{prompt.textContent="visitor@"+eras[year].prompt+":"+getPath()+"$";};
+const commands=()=>["help","ls","pwd","cd","cat","echo","clear","date","uname","whoami","history","about","source","timeline","desktop"];
+function execute(line){
+ const args=line.trim().split(/\s+/);const command=args[0],target=args[1]||".",node=nodeAt(normalize(target)),era=eras[year];
+ switch(command){
+ case "":break;
+ case "help":print("Available commands:\n"+commands().join("  ")+"\n\nTry the suggested commands below the terminal.");break;
+ case "ls":print(node===null?"ls: no such file or directory":typeof node==="string"?target:Object.keys(node).sort().join("   "));break;
+ case "pwd":print(getPath());break;
+ case "cd":{const path=normalize(args[1]||"/");const dest=nodeAt(path);if(dest&&typeof dest==="object"){cwd=path;updatePrompt()}else print("cd: not a directory");break;}
+ case "cat":print(!args[1]?"cat: missing filename":node===null?"cat: file not found":typeof node==="object"?"cat: is a directory":node);break;
+ case "echo":print(args.slice(1).join(" "));break;
+ case "clear":output.replaceChildren();break;
+ case "date":print(new Date().toString()+" (your device clock; not historical time)");break;
+ case "uname":print(args.includes("-r")?era.version+" (illustrative)":args.includes("-a")?"Linux "+era.prompt+" "+era.version+" simulated educational environment":"Linux (simulated)");break;
+ case "whoami":print("visitor");break;
+ case "history":print(history.map((item,index)=>(index+1)+"  "+item).join("\n"));break;
+ case "about":print(era.intro);break;
+ case "source":print("Original Linux 0.01 archive: https://www.kernel.org/pub/linux/kernel/Historic/");break;
+ case "timeline":print(Object.entries(eras).map(([key,item])=>key+" — "+item.title).join("\n"));break;
+ case "desktop":print(year==="1991"?"1991: Linux 0.01 did not include a graphical desktop.":year==="1993"?"1993: early distributions could run graphical X environments, but this era focuses on the shell.":"See the illustrative desktop concept above the terminal.");break;
+ default:print(command+": command not found (educational simulation)");
+ }
+}
+function submit(value){print("visitor@"+eras[year].prompt+":"+getPath()+"$ "+value,"entered");if(value.trim()){history.push(value);historyIndex=history.length;}execute(value);input.value="";terminal.scrollTop=terminal.scrollHeight;}
+function reset(){cwd=[];history=[];historyIndex=0;output.replaceChildren();input.value="";updatePrompt();input.focus();}
+function renderDesktop(era){
+ preview.replaceChildren();const label=document.createElement("div");label.className="preview-label";label.textContent=era.desktop+" / ORIGINAL ILLUSTRATIVE UI";preview.append(label);
+ if(year==="1991"||year==="1993"){const panel=document.createElement("div");panel.className="preview-text";panel.textContent=year==="1991"?"NO GRAPHICAL DESKTOP\nLinux 0.01 was a kernel release.":"EARLY DISTRIBUTION ERA\nA shell-first historical overview.";preview.append(panel);return;}
+ const scene=document.createElement("div");scene.className="desktop-scene desktop-"+year;
+ const bar=document.createElement("div");bar.className="desktop-bar";bar.textContent=year==="1998"?"K • File  Edit  View  Help":year==="2004"?"Applications    Places    System":"◈   Activities     Files     Terminal";
+ const window=document.createElement("div");window.className="desktop-window";
+ const title=document.createElement("div");title.className="desktop-window-title";title.textContent="Welcome — "+year+"  ◻ ×";
+ const content=document.createElement("div");content.className="desktop-window-content";content.textContent=year==="1998"?"Graphical Linux enters a new era.":year==="2004"?"Linux becomes a desktop option for more people.":"Linux powers the modern world.";
+ window.append(title,content);scene.append(bar,window);preview.append(scene);
+}
+function setEra(next){
+ if(!Object.hasOwn(eras,next))return;
+ year=next;reset();
+ const era=eras[year];
+ document.querySelectorAll(".era-card").forEach(button=>{const active=button.dataset.year===year;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});
+ $(".portal-year").textContent=year;
+ $("#console-title").innerHTML="BOOT INTO <em>"+year+".</em>";
+ $("#console-description").textContent=era.intro;
+ $("#console-identifier").textContent="CHRONO_TERMINAL // "+era.title;
+ $("#console-destination").textContent="DESTINATION: "+year;
+ $("#boot-description").textContent="Destination: "+era.context+"\nEnvironment: "+era.title+"\n\nNOTICE: Educational reconstruction. Not a bootable historical OS.\nType help for commands.\n\n";
+ tips.replaceChildren();era.commands.forEach(([command,description])=>{const button=document.createElement("button");button.type="button";button.className="command-tip";const code=document.createElement("code");code.textContent=command;const detail=document.createElement("span");detail.textContent=description;button.append(code,detail);button.addEventListener("click",()=>{submit(command);input.focus()});tips.append(button);});
+ facts.replaceChildren();era.facts.forEach(item=>{const li=document.createElement("li");li.textContent=item;facts.append(li);});
+ renderDesktop(era);
+}
+shell.addEventListener("submit",event=>{event.preventDefault();submit(input.value);});
+input.addEventListener("keydown",event=>{if(event.key==="ArrowUp"){event.preventDefault();historyIndex=Math.max(0,historyIndex-1);input.value=history[historyIndex]||"";}else if(event.key==="ArrowDown"){event.preventDefault();historyIndex=Math.min(history.length,historyIndex+1);input.value=history[historyIndex]||"";}});
+$("#reset").addEventListener("click",reset);
+terminal.addEventListener("click",()=>input.focus());
+document.querySelectorAll(".era-card").forEach(button=>button.addEventListener("click",()=>{setEra(button.dataset.year);$("#terminal-section").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});}));
+setEra("1991");
