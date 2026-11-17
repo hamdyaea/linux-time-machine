@@ -9,7 +9,7 @@
       "memory_mib": 8,
       "boot": "floppy",
       "floppy": "/images/linux-0.01-floppy.img",
-      "ide": "/images/linux-0.01-hda.img",
+      "ide": "/images/linux-0.01-hda.img.gz",
       "source": "https://github.com/joeangel/linux-0.01"
     },
     "1993": {
