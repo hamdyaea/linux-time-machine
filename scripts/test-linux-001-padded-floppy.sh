@@ -13,9 +13,9 @@ data = src.read_bytes()
 capacity = 80 * 2 * 18 * 512
 if len(data) > capacity:
     raise SystemExit(f"Image too large: {len(data)} > {capacity}")
-if data[510:512] != b"\\x55\\xaa":
+if data[510:512] != bytes.fromhex("55aa"):
     raise SystemExit("Missing BIOS boot signature at offset 510")
-out.write_bytes(data.ljust(capacity, b"\\0"))
+out.write_bytes(data.ljust(capacity, bytes([0])))
 print(f"Original: {len(data)} bytes")
 print(f"Padded:   {out} ({out.stat().st_size} bytes)")
 print("Boot sector and kernel bytes preserved; original file untouched.")
