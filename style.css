@@ -79,3 +79,24 @@
 .console-featured .command-guide{margin-top:15px}
 .console-featured .desktop-preview{padding-top:10px}
 @media(max-width:650px){.console-featured .terminal{height:340px}.quick-years button{padding:8px 11px}.quick-years span{width:100%}}
+
+/* Temporal drive — mechanical cockpit redesign */
+.machine-scene{min-height:580px;overflow:hidden;border-radius:24px;border:1px solid #3a6c79;background:radial-gradient(ellipse at 50% 45%,#095c7d70 0%,#071827 48%,#020811 85%);box-shadow:inset 0 0 90px #000,0 25px 70px #000a,0 0 45px #00caff15}
+.machine-scene:after{content:"";position:absolute;inset:8px;pointer-events:none;border:2px solid #bd7a43aa;border-radius:18px;box-shadow:inset 0 0 0 5px #12242e,inset 0 0 0 8px #46606b,0 0 20px #e88b3a25}
+.machine-scene .portal{top:43%;width:min(420px,82%);filter:drop-shadow(0 0 30px #03d6ff)}
+.machine-scene .portal-ring.outer{border:12px ridge #a88b69;background:repeating-conic-gradient(#20e8ff 0 3deg,#0a2638 3deg 10deg,#de853b 10deg 12deg,#051320 12deg 15deg);mask:radial-gradient(circle,transparent 57%,#000 59%,#000 72%,transparent 74%);animation:rotate 18s linear infinite}
+.machine-scene .portal-ring.inner{inset:13%;border:8px double #e4a065;box-shadow:inset 0 0 70px #00dbff80,0 0 45px #00c9ff8a,0 0 8px 2px #f4a95e}
+.machine-scene .portal-core{inset:24%;background:radial-gradient(circle,#0879a6b8 0%,#022333cc 70%);box-shadow:inset 0 0 60px #14e4ff}
+.machine-scene .portal-year{font-size:clamp(58px,7vw,94px);color:#f0ffff;text-shadow:0 0 25px #02d8ff}
+.machine-scene .vehicle{bottom:65px;width:340px;transform:translateX(-50%) perspective(500px) rotateX(9deg);filter:drop-shadow(0 12px 20px #000) drop-shadow(0 0 12px #f0a65a)}
+.machine-scene .vehicle-body{background:linear-gradient(170deg,#faf0d4 0%,#b89c7c 15%,#4b6474 38%,#172733 65%,#0a141d 100%);border-bottom:5px solid #ffae5a;box-shadow:0 0 24px #ff914955}
+.machine-scene .vehicle-cabin{background:linear-gradient(130deg,#e3bd8e,#668899 35%,#042e43 65%,#051522 80%);border-top:3px solid #f4d5a0}
+.machine-scene .road{height:50%;width:3px;background:linear-gradient(transparent,#00d6ff,#ffae55);box-shadow:0 0 18px #00d6ff}
+.machine-scene .scene-label{z-index:6;background:#05151dc9;border:1px solid #af845b88;padding:10px 12px;border-radius:4px;color:#c0e9f4}
+.machine-scene .scene-label.top{top:27px;left:28px}
+.machine-scene .scene-label.bottom{bottom:27px;right:28px}
+.machine-scene:before{background:repeating-linear-gradient(0deg,transparent 0 26px,#00c9ff10 27px 28px),radial-gradient(ellipse at 50% 46%,#0ed4ff40,transparent 65%);animation:temporal-pulse 4s ease-in-out infinite alternate}
+@keyframes temporal-pulse{from{opacity:.65}to{opacity:1}}
+.hero{gap:42px}
+@media(max-width:650px){.machine-scene{min-height:390px;height:390px}.machine-scene .vehicle{transform:translateX(-50%) scale(.72);bottom:45px}.machine-scene .scene-label{padding:6px;font-size:8px}.machine-scene .portal{width:min(330px,90%)}}
+@media(prefers-reduced-motion:reduce){.machine-scene:before,.machine-scene .portal-ring.outer{animation:none}}
