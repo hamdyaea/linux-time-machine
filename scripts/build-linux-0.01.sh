@@ -8,6 +8,16 @@ UPSTREAM="https://github.com/joeangel/linux-0.01.git"
 mkdir -p "$(dirname "$WORK")" "$ROOT/images"
 if ! command -v docker >/dev/null; then echo "Docker is required" >&2; exit 1; fi
 if ! command -v git >/dev/null; then echo "Git is required" >&2; exit 1; fi
+if ! docker buildx version >/dev/null 2>&1; then
+ echo "Docker Buildx is required: docker buildx version failed." >&2
+ echo "Arch/CachyOS: sudo pacman -S docker-buildx" >&2
+ echo "Then rerun this script; the cloned sources are preserved." >&2
+ exit 1
+fi
+if ! docker info >/dev/null 2>&1; then
+ echo "Cannot contact Docker daemon. Start docker.service and check user permissions." >&2
+ exit 1
+fi
 if [[ ! -d "$WORK/.git" ]]; then git clone "$UPSTREAM" "$WORK"; fi
 (
  cd "$WORK"
