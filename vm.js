@@ -9,7 +9,8 @@
   floppy:"/images/linux-0.01-floppy.img",
   disk:"/images/linux-0.01-hda.img.gz"
  };
- let vm=null,starting=false,bootTimer=null;
+ let vm=null,starting=false,bootTimer=null,diskUrl=null;
+ const releaseDisk=()=>{if(diskUrl){URL.revokeObjectURL(diskUrl);diskUrl=null;}};
  const clearBootTimer=()=>{if(bootTimer!==null){clearTimeout(bootTimer);bootTimer=null;}};
  const report=message=>{status.textContent=message;};
  async function verify(path){
@@ -28,7 +29,7 @@
   const buffer=await new Response(decompressed).arrayBuffer();
   if(buffer.byteLength!==40*1024*1024 && buffer.byteLength!==40_000_000)
    throw Error("Unexpected disk image size: "+buffer.byteLength+" bytes");
-  return new Uint8Array(buffer);
+  return buffer;
  }
  start.addEventListener("click",async()=>{
   if(starting||vm)return;
@@ -46,6 +47,8 @@
    report("Checking v86 emulator and Linux 0.01 boot assets...");
    await Promise.all(Object.values(paths).map(verify));
    const disk=await loadDisk();
+   releaseDisk();
+   diskUrl=URL.createObjectURL(new Blob([disk],{type:"application/octet-stream"}));
    report("Starting authentic x86 guest (8 MiB RAM, floppy boot, decompressed IDE disk)...");
    const Emulator=window.V86Starter||window.V86;
    const constructorName=typeof window.V86Starter==="function"?"V86Starter":"V86";
@@ -53,7 +56,7 @@
     wasm_path:paths.wasm,memory_size:8*1024*1024,vga_memory_size:2*1024*1024,
     screen_container:document.getElementById("screen_container"),
     bios:{url:paths.bios},vga_bios:{url:paths.vga},
-    fda:{url:paths.floppy},hda:{buffer:disk},boot_order:0x132,autostart:true
+    fda:{url:paths.floppy},hda:{url:diskUrl},boot_order:0x132,autostart:true
    });
    bootTimer=setTimeout(()=>{
     bootTimer=null;
@@ -63,16 +66,18 @@
     stop.disabled=false;
    },20000);
    vm.add_listener("emulator-ready",()=>{clearBootTimer();report("x86 emulator running. Click the guest screen and use your keyboard.");stop.disabled=false;});
-   vm.add_listener("emulator-stopped",()=>{clearBootTimer();report("PC powered off.");start.disabled=false;stop.disabled=true;vm=null;});
+   vm.add_listener("emulator-stopped",()=>{clearBootTimer();report("PC powered off.");start.disabled=false;stop.disabled=true;vm=null;releaseDisk();});
   }catch(error){
    clearBootTimer();
    report("Unable to start: "+error.message);start.disabled=false;
    if(vm){try{vm.destroy();}catch{}vm=null;}
+   releaseDisk();
   }finally{starting=false;}
  });
  stop.addEventListener("click",()=>{
   clearBootTimer();
   if(vm){try{vm.stop();vm.destroy();}catch{}vm=null;}
+  releaseDisk();
   stop.disabled=true;start.disabled=false;report("PC powered off.");
  });
 })();
