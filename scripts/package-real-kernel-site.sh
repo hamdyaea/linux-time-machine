@@ -14,6 +14,16 @@ for file in \
  "$ROOT/vendor/v86/vgabios.bin"; do
  if [[ ! -s "$file" ]]; then echo "Missing boot asset: $file" >&2; exit 1; fi
 done
+python3 - "$ROOT/images/linux-0.01-floppy.img" "$ROOT/images/linux-0.01-floppy-1440k.img" <<'PY'
+from pathlib import Path
+import sys
+src, dst = map(Path, sys.argv[1:])
+data = src.read_bytes()
+if len(data) > 1474560 or data[510:512] != bytes.fromhex("55aa"):
+    raise SystemExit("Invalid boot image or image exceeds 1.44 MB")
+dst.write_bytes(data.ljust(1474560, bytes([0])))
+print("Padded boot floppy:", dst, dst.stat().st_size)
+PY
 mkdir -p "$OUT/images" "$OUT/vendor/v86" "$OUT/assets"
 # Remove the oversized raw disk from any previous build; Pages rejects files >25 MiB.
 rm -f "$OUT/images/linux-0.01-hda.img"
@@ -21,12 +31,12 @@ for file in index.html about.html developer.html vm.html vm.js vm-diagnostics.js
  [[ -f "$ROOT/$file" ]] && cp "$ROOT/$file" "$OUT/$file"
 done
 cp -a "$ROOT/assets/." "$OUT/assets/"
-cp "$ROOT/images/linux-0.01-floppy.img" "$ROOT/images/linux-0.01-hda.img.gz" "$OUT/images/"
+cp "$ROOT/images/linux-0.01-floppy-1440k.img" "$ROOT/images/linux-0.01-hda.img.gz" "$OUT/images/"
 cp "$ROOT/vendor/v86/"{libv86.js,v86.wasm,seabios.bin,vgabios.bin} "$OUT/vendor/v86/"
 cp "$ROOT/guests.json" "$OUT/guests.json"
 (
  cd "$OUT"
- sha256sum images/linux-0.01-floppy.img images/linux-0.01-hda.img.gz vendor/v86/{libv86.js,v86.wasm,seabios.bin,vgabios.bin} > SHA256SUMS
+ sha256sum images/linux-0.01-floppy-1440k.img images/linux-0.01-hda.img.gz vendor/v86/{libv86.js,v86.wasm,seabios.bin,vgabios.bin} > SHA256SUMS
 )
 if find "$OUT" -type f -size +25M -print | grep -q .; then
  echo "ERROR: Bundle contains a file larger than 25 MiB:" >&2
