@@ -78,9 +78,38 @@ function showBanner(){
  const add=()=>{if(token!==bootToken)return;if(i>=lines.length){return;}element.textContent+=lines[i++]+"\n";terminal.scrollTop=terminal.scrollHeight;window.setTimeout(add,85);};
  add();
 }
+const realKernelEras=new Set(["1991","1993"]);
+let realKernelAvailable=false;
+async function checkRealKernelAssets(){
+ const paths=["/vendor/v86/libv86.js","/vendor/v86/v86.wasm","/vendor/v86/seabios.bin","/vendor/v86/vgabios.bin","/images/linux-0.01-floppy.img","/images/linux-0.01-hda.img"];
+ try{
+  const results=await Promise.all(paths.map(async path=>{
+   const response=await fetch(path,{method:"HEAD",cache:"no-store"});
+   return response.ok&&!((response.headers.get("content-type")||"").includes("text/html"));
+  }));
+  realKernelAvailable=results.every(Boolean);
+ }catch{realKernelAvailable=false;}
+ updateKernelPanel();
+}
+function updateKernelPanel(){
+ const panel=$("#kernel-boot-panel"),detail=$("#kernel-boot-detail"),link=$("#kernel-boot-link"),title=$("#kernel-boot-title");
+ if(!panel)return;
+ panel.hidden=!realKernelEras.has(year);
+ if(panel.hidden)return;
+ if(year==="1991"){
+  title.textContent="LINUX 0.01 / REAL x86 BOOT";
+  detail.textContent=realKernelAvailable?"Boot the compatibility-patched Linux 0.01 kernel in the browser's x86 emulator.":"Linux 0.01 boots in QEMU. Browser boot files are not yet deployed; the terminal below is an interactive historical shell.";
+  link.hidden=!realKernelAvailable;
+  link.href="/vm.html?era=1991";
+ }else{
+  title.textContent="1993 / HISTORICAL KERNEL";
+  detail.textContent="A verified 1993 kernel and matching distribution disk have not yet been prepared. The terminal below is an interactive historical shell.";
+  link.hidden=true;
+ }
+}
 function setEra(next){
  if(!Object.hasOwn(eras,next))return;
- year=next;reset();
+ year=next;reset();updateKernelPanel();
  document.querySelectorAll("[data-jump]").forEach(button=>{const selected=button.dataset.jump===year;button.classList.toggle("selected",selected);button.setAttribute("aria-pressed",String(selected));});
  const era=eras[year];
  document.querySelectorAll(".era-card").forEach(button=>{const active=button.dataset.year===year;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});
@@ -139,3 +168,4 @@ terminal.addEventListener("click",()=>input.focus());
 document.querySelectorAll("[data-jump]").forEach(button=>button.addEventListener("click",()=>setEra(button.dataset.jump)));
 document.querySelectorAll(".era-card").forEach(button=>button.addEventListener("click",()=>{setEra(button.dataset.year);$("#terminal-section").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});}));
 setEra("1991");
+checkRealKernelAssets();
