@@ -9,7 +9,8 @@
   floppy:"/images/linux-0.01-floppy.img",
   disk:"/images/linux-0.01-hda.img.gz"
  };
- let vm=null,starting=false;
+ let vm=null,starting=false,bootTimer=null;
+ const clearBootTimer=()=>{if(bootTimer!==null){clearTimeout(bootTimer);bootTimer=null;}};
  const report=message=>{status.textContent=message;};
  async function verify(path){
   const response=await fetch(path,{method:"HEAD",cache:"no-store"});
@@ -47,20 +48,30 @@
    const disk=await loadDisk();
    report("Starting authentic x86 guest (8 MiB RAM, floppy boot, decompressed IDE disk)...");
    const Emulator=window.V86Starter||window.V86;
+   const constructorName=typeof window.V86Starter==="function"?"V86Starter":"V86";
    vm=new Emulator({
     wasm_path:paths.wasm,memory_size:8*1024*1024,vga_memory_size:2*1024*1024,
     screen_container:document.getElementById("screen_container"),
     bios:{url:paths.bios},vga_bios:{url:paths.vga},
     fda:{url:paths.floppy},hda:{buffer:disk},boot_order:0x132,autostart:true
    });
-   vm.add_listener("emulator-ready",()=>{report("x86 emulator running. Click the guest screen and use your keyboard.");stop.disabled=false;});
-   vm.add_listener("emulator-stopped",()=>{report("PC powered off.");start.disabled=false;stop.disabled=true;vm=null;});
+   bootTimer=setTimeout(()=>{
+    bootTimer=null;
+    const errors=(window.__v86LoadErrors||[]).slice(-3).join(" | ");
+    report("Emulator did not become ready within 20 seconds. Constructor: "+constructorName+". State: "+(vm&&typeof vm.is_running==="function"?String(vm.is_running()):"unknown")+". "+(errors?"Errors: "+errors:"Check browser Console for v86 initialization failures."));
+    start.disabled=false;
+    stop.disabled=false;
+   },20000);
+   vm.add_listener("emulator-ready",()=>{clearBootTimer();report("x86 emulator running. Click the guest screen and use your keyboard.");stop.disabled=false;});
+   vm.add_listener("emulator-stopped",()=>{clearBootTimer();report("PC powered off.");start.disabled=false;stop.disabled=true;vm=null;});
   }catch(error){
+   clearBootTimer();
    report("Unable to start: "+error.message);start.disabled=false;
    if(vm){try{vm.destroy();}catch{}vm=null;}
   }finally{starting=false;}
  });
  stop.addEventListener("click",()=>{
+  clearBootTimer();
   if(vm){try{vm.stop();vm.destroy();}catch{}vm=null;}
   stop.disabled=true;start.disabled=false;report("PC powered off.");
  });
