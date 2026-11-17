@@ -61,12 +61,12 @@ const banners={
  "1993":["Slackware Linux 1.0","Linux 0.99.13 (i386)","login: root",""],
  "1998":["Linux 2.0.36 (i386)","Welcome to Linux",""],
  "2004":["Ubuntu 4.10 (Warty Warthog)","Linux 2.6.8 (i386)",""],
- "2026":["Linux 6.x (x86_64)",""]
+ "today":["Linux (x86_64)",""]
 };
 // Era banners are presentation text, not kernel-generated boot logs.
 function showBanner(){
  const token=++bootToken;
- const lines=banners[year];const element=$("#boot-description");
+ const lines=banners[year]||["Linux",""];const element=$("#boot-description");
  element.textContent="";
  const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
  if(reduced){element.textContent=lines.join("\n")+"\\n";return;}
