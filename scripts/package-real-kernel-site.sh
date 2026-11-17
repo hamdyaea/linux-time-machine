@@ -17,7 +17,7 @@ done
 mkdir -p "$OUT/images" "$OUT/vendor/v86" "$OUT/assets"
 # Remove the oversized raw disk from any previous build; Pages rejects files >25 MiB.
 rm -f "$OUT/images/linux-0.01-hda.img"
-for file in index.html about.html developer.html vm.html vm.js app.js eras.js style.css _headers LICENSE; do
+for file in index.html about.html developer.html vm.html vm.js vm-diagnostics.js app.js eras.js style.css _headers LICENSE; do
  [[ -f "$ROOT/$file" ]] && cp "$ROOT/$file" "$OUT/$file"
 done
 cp -a "$ROOT/assets/." "$OUT/assets/"
