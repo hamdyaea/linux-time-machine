@@ -23,7 +23,7 @@ The site features an interactive terminal with period-inspired prompts, command 
 Senior Linux System Engineer · Open-source developer · Cybersecurity specialist.
 
 - **GitHub:** https://github.com/hamdyaea
-- **Daylight Linux:** https://daylightlinux.ch
+- **Daylight Linux:** https://daylightlinux.ch\n- **Email:** info@daylightlinux.ch\n- **Developer page:** https://linux-time-machine.pages.dev/developer.html\n- **About page:** https://linux-time-machine.pages.dev/about.html
 - **Linux Time Machine:** https://linux-time-machine.pages.dev/
 
 Contributions, historical research, testing, and suggestions are welcome through GitHub issues and pull requests.
