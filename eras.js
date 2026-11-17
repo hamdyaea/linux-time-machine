@@ -37,7 +37,7 @@ export const eras = {
   files:{"README":"2004: the modern Linux desktop gathers momentum.",
   "etc":{"issue":"Ubuntu 4.10 (Warty Warthog)","debian_version":"3.1"},
   "home":{"visitor":{"Desktop":{"Start.txt":"A new generation discovers Linux."},"Documents":{"history.txt":"Ubuntu 4.10 was released in October 2004."},"Pictures":{}}},
-  "usr":{"share":{"applications":{}}},
+  "usr":{"share":{"applications":{}}}},
   facts:["Ubuntu 4.10 ('Warty Warthog') launched in October 2004.","Linux 2.6 was introduced in late 2003 and widely used in 2004.","Ubuntu 4.10 shipped with the GNOME desktop."]
  },
  "today": {
@@ -45,9 +45,9 @@ export const eras = {
   intro:"Linux powers servers, phones, containers, embedded devices, supercomputers and desktop workstations. Linux continues to evolve across computing platforms.",
   commands:[["cat /etc/os-release","Inspect distribution identity"],["uname -a","Display system details"],["ls /home/visitor/Projects","Explore projects"],["id","Inspect user and groups"],["env","Display environment"],["desktop","Explore modern desktop"]],
   files:{"README":"Today: Linux is everywhere.\nModern Linux spans many distributions and environments.",
-  "etc":{"os-release":"NAME=\"Linux\"\nPRETTY_NAME=\"Linux 2026\"","issue":"Linux 2026"},
+  "etc":{"os-release":"NAME=\"Linux\"\nPRETTY_NAME=\"Linux\"","issue":"Linux"},
   "home":{"visitor":{"Desktop":{"Welcome.txt":"Open source keeps evolving."},"Projects":{"README":"Containers, cloud, security and Linux."},"Documents":{}}},
-  "usr":{"share":{"applications":{}}},
+  "usr":{"share":{"applications":{}}}},
   facts:["Linux underpins major cloud and container infrastructure.","Linux also runs across embedded systems and mobile devices.","Linux remains central to modern infrastructure."]
  }
 };
