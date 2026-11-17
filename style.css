@@ -152,3 +152,9 @@
 .chrono-bottom span:nth-child(2){color:#00e2ff;text-shadow:0 0 13px #00cfff}
 @media(max-width:900px){.chrono-dashboard{grid-template-columns:minmax(0,1fr);padding:15px}.chrono-main{grid-column:1;grid-row:2}.chrono-side{grid-column:1;grid-row:3;margin-top:18px}.chrono-side .quick-years{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.chrono-side .quick-years button{text-align:center;font-size:clamp(12px,2.3vw,18px);min-height:48px;padding:8px 3px}.chrono-side-gauge,.chrono-side-status{display:none}.chrono-bottom{grid-row:4}.chrono-power{display:none}}
 @media(max-width:650px){.chrono-dashboard{border-width:6px;border-radius:17px;padding:10px}.chrono-banner{min-height:75px;padding:10px;gap:10px}.chrono-emblem{width:43px;height:43px;flex-basis:43px;font-size:24px;border-width:4px}.chrono-banner strong{font-size:clamp(17px,4vw,25px)}.chrono-banner small{font-size:7px}.chrono-main{border-width:5px}.chrono-main .terminal{min-height:330px;height:360px;font-size:12px}.chrono-screen-label{font-size:8px}.chrono-side{padding:10px;border-width:4px}.chrono-bottom{font-size:8px;padding:12px}.chrono-bottom span:nth-child(2){display:none}}
+
+/* Nine eras: horizontally navigable cockpit controls, readable at every width */
+.chrono-side .quick-years{max-height:510px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2685a0 #07131b}
+.chrono-side .quick-years button{min-height:43px;font-size:17px;padding:7px 13px;flex-shrink:0}
+.era-track{overflow-x:auto;scrollbar-width:thin;scrollbar-color:#227c99 #091924}
+@media(max-width:900px){.chrono-side .quick-years{display:flex;flex-direction:row;overflow-x:auto;overflow-y:hidden;max-height:none;padding:5px}.chrono-side .quick-years button{min-width:76px;width:auto;min-height:45px;padding:7px 10px;font-size:14px}}
