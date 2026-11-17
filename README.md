@@ -1,49 +1,54 @@
 # Linux Time Machine
 
-Travel through Linux history, from 1991 to today, in your browser.
+**The past is open source.** An original retro-futuristic interactive journey through Linux history, starting with the 1991 Linux 0.01 era.
 
-## Version 0.1 — 1991
+**Live demo:** https://linux-time-machine.pages.dev/  
+**Planned domain:** https://linuxtimemachine.org/
 
-The first experience is an **educational reconstruction** inspired by the Linux 0.01 era. It does **not** boot Linux 0.01, execute Linux binaries, or reproduce an authentic 1991 filesystem. Its shell commands operate on a small in-memory educational file tree.
+## What is available
 
-### Features
+- Original 2027-style time-travel interface: neon cyan, copper, sci-fi portal and an original generic futuristic vehicle illustration (all CSS; no movie assets)
+- Interactive 1991 educational shell reconstruction
+- Timeline from 1991 to modern Linux, with future chapters labeled *coming soon*
+- Responsive layout, keyboard command history, reduced-motion support
+- No backend or server-side computation required
 
-- Responsive timeline and terminal UI
-- Simulated commands: `help`, `ls`, `pwd`, `cd`, `cat`, `echo`, `clear`, `date`, `uname`, `whoami`, `history`, `about`, `source`
-- Command history using arrow keys
-- No backend, tracking, or external JavaScript dependencies
-- Static deployment to Cloudflare Pages
+### Important historical distinction
 
-## Cloudflare Pages
+The terminal is a **simulation**, not a real Linux 0.01 boot. Its commands operate on a small in-memory representation of source tree concepts. The authentic 1991 kernel source can be found at https://www.kernel.org/pub/linux/kernel/Historic/.
 
-Connect this GitHub repository to Cloudflare Pages:
+## Cloudflare Pages deployment
+
+Connect the repository and select:
 
 - Framework preset: **None**
 - Build command: **leave blank**
 - Build output directory: **/** (repository root)
 - Production branch: **main**
 
-No npm installation or build step is required. The site is plain HTML, CSS, and JavaScript.
+Cloudflare deploys automatically on pushes to main. No Node.js or package installation is required.
 
 ## Local development
 
-Serve the directory with any static HTTP server, for example `python3 -m http.server 8000`. Open http://localhost:8000.
+Run `python3 -m http.server 8000` and visit http://localhost:8000.
+
+## Technology
+
+HTML, CSS, vanilla JavaScript. Google Fonts provides optional typography with system-font fallback. Cloudflare Pages `_headers` configures security headers.
 
 ## Roadmap
 
-- Source-accurate exploration of the 1991 Linux kernel
-- Historic desktop reproductions
-- Optional real Linux guest using a browser emulator such as v86 (Tiny Core Linux is under evaluation)
-- Additional eras from 1991 to modern Linux
+1. Explore original Linux 0.01 source accurately, with documented references.
+2. Recreate classic Linux desktop environments in original web UI components.
+3. Evaluate an optional real Linux browser VM using v86 and a small compatible guest (Tiny Core is a candidate, not integrated yet).
+4. Expand the timeline and interactive experiences.
 
-## Historical source
+## License and intellectual property
 
-https://www.kernel.org/pub/linux/kernel/Historic/
+**MIT License** for original project code, see [LICENSE](LICENSE). The license does not grant rights to third-party trademarks, historical screenshots, Linux distributions, or assets added later under other licenses.
 
-## Project
+The vehicle, portal, dashboard, and time-travel visual identity are original generic science-fiction artwork implemented with CSS, and do not reproduce a specific film vehicle, title treatment, logo, or other protected movie elements.
 
-An independent open-source educational project associated with [Daylight Linux](https://daylightlinux.ch). Not affiliated with Linus Torvalds or the Linux Foundation.
+Linux is a trademark of Linus Torvalds. This is an independent educational project, not affiliated with Linus Torvalds, the Linux Foundation, or any motion picture franchise.
 
-## License
-
-Source code license to be selected after checking rights for all included assets. No third-party historic desktop graphics are bundled.
+Created as part of the [Daylight Linux](https://daylightlinux.ch) ecosystem.
