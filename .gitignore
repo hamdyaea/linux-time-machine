@@ -1,0 +1,5 @@
+.work/
+images/linux-0.01-Image
+*.qcow2
+*.img
+.DS_Store
