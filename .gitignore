@@ -3,3 +3,7 @@ images/linux-0.01-Image
 *.qcow2
 *.img
 .DS_Store
+
+images/linux-0.01-floppy.img
+images/linux-0.01-hda.img
+vendor/v86/
