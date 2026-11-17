@@ -18,18 +18,17 @@ function execute(line){
  const args=line.trim().split(/\s+/);const command=args[0],target=args[1]||".",node=nodeAt(normalize(target)),era=eras[year];
  switch(command){
  case "":break;
- case "help":print("Available commands:\n"+commands().join("  ")+"\n\nTry the suggested commands below the terminal.");break;
+ case "help":print("Available commands:\n"+commands().join("  "));break;
  case "ls":print(node===null?"ls: no such file or directory":typeof node==="string"?target:Object.keys(node).sort().join("   "));break;
  case "pwd":print(getPath());break;
  case "hostname":print(year==="2004"?"ubuntu":"linux");break;
  case "id":print(year==="1991"||year==="1993"?"uid=0(root) gid=0(root)":"uid=1000(visitor) gid=1000(visitor)");break;
  case "uptime":print("up 0 min, 1 user");break;
- case "env":print("HOME="+homePath()+"\\nSHELL=/bin/sh\\nPATH=/bin:/usr/bin");break;
+ case "env":print("HOME="+homePath()+"\nSHELL=/bin/sh\nPATH=/bin:/usr/bin");break;
  case "printf":print(args.slice(1).join(" ").replaceAll("\\n","\\n"));break;
- case "head":{const file=nodeAt(normalize(args.at(-1)||"."));print(typeof file==="string"?file.split("\\n").slice(0,10).join("\\n"):"head: cannot open file");break;}
- case "wc":{const file=nodeAt(normalize(args.at(-1)||"."));print(typeof file==="string"?file.split("\\n").length+" "+file.trim().split(/\\s+/).length+" "+file.length+" "+args.at(-1):"wc: cannot open file");break;}
- case "grep":{const pattern=args[1];const file=nodeAt(normalize(args[2]||"."));print(!pattern?"grep: missing pattern":typeof file==="string"?file.split("\\n").filter(x=>x.includes(pattern)).join("\\n"):"grep: cannot open file");break;}
- case "ls":
+ case "head":{const file=nodeAt(normalize(args.at(-1)||"."));print(typeof file==="string"?file.split("\n").slice(0,10).join("\n"):"head: cannot open file");break;}
+ case "wc":{const file=nodeAt(normalize(args.at(-1)||"."));print(typeof file==="string"?file.split("\n").length+" "+file.trim().split(/\\s+/).length+" "+file.length+" "+args.at(-1):"wc: cannot open file");break;}
+ case "grep":{const pattern=args[1];const file=nodeAt(normalize(args[2]||"."));print(!pattern?"grep: missing pattern":typeof file==="string"?file.split("\n").filter(x=>x.includes(pattern)).join("\n"):"grep: cannot open file");break;}
  case "cd":{const path=normalize(args[1]||homePath());const dest=nodeAt(path);if(dest&&typeof dest==="object"){cwd=path;updatePrompt()}else print("cd: not a directory");break;}
  case "cat":print(!args[1]?"cat: missing filename":node===null?"cat: file not found":typeof node==="object"?"cat: is a directory":node);break;
  case "echo":print(args.slice(1).join(" "));break;
@@ -70,7 +69,7 @@ function showBanner(){
  const lines=banners[year];const element=$("#boot-description");
  element.textContent="";
  const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
- if(reduced){element.textContent=lines.join("\\n")+"\\n";return;}
+ if(reduced){element.textContent=lines.join("\n")+"\\n";return;}
  let i=0;
  const add=()=>{if(token!==bootToken)return;if(i>=lines.length){return;}element.textContent+=lines[i++]+"\\n";terminal.scrollTop=terminal.scrollHeight;window.setTimeout(add,85);};
  add();
