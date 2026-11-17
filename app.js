@@ -89,7 +89,7 @@ function setEra(next){
  $("#console-shell").classList.remove("is-booting");
  void $("#console-shell").offsetWidth;
  $("#console-shell").classList.add("is-booting");
- $("#terminal-status").textContent=year==="1991"?"◉ tty0 · 80×25":year==="1993"?"◉ tty1 · 80×25":year==="2026"?"◉ pts/0 · UTF-8":"◉ tty1 · 80×25";
+ $("#terminal-status").textContent=year==="1991"?"◉ tty0 · 80×25":year==="1993"?"◉ tty1 · 80×25":year==="today"?"◉ pts/0 · UTF-8":"◉ tty1 · 80×25";
  showBanner();
  tips.replaceChildren();era.commands.forEach(([command,description])=>{const button=document.createElement("button");button.type="button";button.className="command-tip";const code=document.createElement("code");code.textContent=command;const detail=document.createElement("span");detail.textContent=description;button.append(code,detail);button.addEventListener("click",()=>{submit(command);input.focus()});tips.append(button);});
  facts.replaceChildren();era.facts.forEach(item=>{const li=document.createElement("li");li.textContent=item;facts.append(li);});
