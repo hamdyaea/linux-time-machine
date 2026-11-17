@@ -110,6 +110,9 @@ function updateKernelPanel(){
 function setEra(next){
  if(!Object.hasOwn(eras,next))return;
  year=next;reset();updateKernelPanel();
+ const realHome=$("#real-linux-home"),historicalShell=$("#console-shell");
+ if(realHome)realHome.hidden=year!=="1991";
+ if(historicalShell)historicalShell.hidden=year==="1991";
  document.querySelectorAll("[data-jump]").forEach(button=>{const selected=button.dataset.jump===year;button.classList.toggle("selected",selected);button.setAttribute("aria-pressed",String(selected));});
  const era=eras[year];
  document.querySelectorAll(".era-card").forEach(button=>{const active=button.dataset.year===year;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});
