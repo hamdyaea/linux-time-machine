@@ -56,7 +56,7 @@
     wasm_path:paths.wasm,memory_size:8*1024*1024,vga_memory_size:2*1024*1024,
     screen_container:document.getElementById("screen_container"),
     bios:{url:paths.bios},vga_bios:{url:paths.vga},
-    fda:{url:paths.floppy},hda:{url:diskUrl},boot_order:0x132,autostart:true
+    fda:{url:paths.floppy},hda:{url:diskUrl},boot_order:0x213,autostart:true
    });
    bootTimer=setTimeout(()=>{
     bootTimer=null;
