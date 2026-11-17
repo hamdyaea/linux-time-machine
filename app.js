@@ -1,6 +1,6 @@
 import { eras } from "./eras.js";
 
-// Every environment is an educational reconstruction, not a real OS.
+// Browser-based historical shell interfaces. See README for implementation scope.
 let year="1991",cwd=[],history=[],historyIndex=0;
 const $=selector=>document.querySelector(selector);
 const terminal=$("#terminal"),output=$("#output"),input=$("#command"),prompt=$("#prompt");
@@ -22,21 +22,21 @@ function execute(line){
  case "cat":print(!args[1]?"cat: missing filename":node===null?"cat: file not found":typeof node==="object"?"cat: is a directory":node);break;
  case "echo":print(args.slice(1).join(" "));break;
  case "clear":output.replaceChildren();break;
- case "date":print(new Date().toString()+" (your device clock; not historical time)");break;
- case "uname":print(args.includes("-r")?era.version+" (illustrative)":args.includes("-a")?"Linux "+era.prompt+" "+era.version+" simulated educational environment":"Linux (simulated)");break;
+ case "date":print(new Date().toString()+"");break;
+ case "uname":print(args.includes("-r")?era.version:args.includes("-a")?"Linux "+era.prompt+" "+era.version+" i386 GNU/Linux":"Linux");break;
  case "whoami":print("visitor");break;
  case "history":print(history.map((item,index)=>(index+1)+"  "+item).join("\n"));break;
  case "about":print(era.intro);break;
  case "source":print("Original Linux 0.01 archive: https://www.kernel.org/pub/linux/kernel/Historic/");break;
  case "timeline":print(Object.entries(eras).map(([key,item])=>key+" — "+item.title).join("\n"));break;
- case "desktop":print(year==="1991"?"1991: Linux 0.01 did not include a graphical desktop.":year==="1993"?"1993: early distributions could run graphical X environments, but this era focuses on the shell.":"See the illustrative desktop concept above the terminal.");break;
- default:print(command+": command not found (educational simulation)");
+ case "desktop":print(year==="1991"?"1991: Linux 0.01 did not include a graphical desktop.":year==="1993"?"1993: early distributions could run graphical X environments, but this era focuses on the shell.":"Desktop environment loaded above the terminal.");break;
+ default:print(command+": command not found");
  }
 }
 function submit(value){print("visitor@"+eras[year].prompt+":"+getPath()+"$ "+value,"entered");if(value.trim()){history.push(value);historyIndex=history.length;}execute(value);input.value="";terminal.scrollTop=terminal.scrollHeight;}
 function reset(){cwd=[];history=[];historyIndex=0;output.replaceChildren();input.value="";updatePrompt();input.focus();}
 function renderDesktop(era){
- preview.replaceChildren();const label=document.createElement("div");label.className="preview-label";label.textContent=era.desktop+" / ORIGINAL ILLUSTRATIVE UI";preview.append(label);
+ preview.replaceChildren();const label=document.createElement("div");label.className="preview-label";label.textContent=era.desktop;preview.append(label);
  if(year==="1991"||year==="1993"){const panel=document.createElement("div");panel.className="preview-text";panel.textContent=year==="1991"?"NO GRAPHICAL DESKTOP\nLinux 0.01 was a kernel release.":"EARLY DISTRIBUTION ERA\nA shell-first historical overview.";preview.append(panel);return;}
  const scene=document.createElement("div");scene.className="desktop-scene desktop-"+year;
  const bar=document.createElement("div");bar.className="desktop-bar";bar.textContent=year==="1998"?"K • File  Edit  View  Help":year==="2004"?"Applications    Places    System":"◈   Activities     Files     Terminal";
@@ -55,7 +55,7 @@ function setEra(next){
  $("#console-description").textContent=era.intro;
  $("#console-identifier").textContent="CHRONO_TERMINAL // "+era.title;
  $("#console-destination").textContent="DESTINATION: "+year;
- $("#boot-description").textContent="Destination: "+era.context+"\nEnvironment: "+era.title+"\n\nNOTICE: Educational reconstruction. Not a bootable historical OS.\nType help for commands.\n\n";
+ $("#boot-description").textContent="Destination: "+era.context+"\nSystem: "+era.title+"\n\nType help for available commands.\n\n";
  tips.replaceChildren();era.commands.forEach(([command,description])=>{const button=document.createElement("button");button.type="button";button.className="command-tip";const code=document.createElement("code");code.textContent=command;const detail=document.createElement("span");detail.textContent=description;button.append(code,detail);button.addEventListener("click",()=>{submit(command);input.focus()});tips.append(button);});
  facts.replaceChildren();era.facts.forEach(item=>{const li=document.createElement("li");li.textContent=item;facts.append(li);});
  renderDesktop(era);
