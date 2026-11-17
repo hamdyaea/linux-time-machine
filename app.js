@@ -1,4 +1,4 @@
-import { eras } from "./eras.js?v=20261117-syntaxfix8";
+import { eras } from "./eras.js?v=20261117-chronodeck11";
 
 // Browser-based historical shell interfaces. See README for implementation scope.
 let year="1991",cwd=[],history=[],historyIndex=0,bootToken=0;
@@ -80,7 +80,7 @@ function setEra(next){
  document.querySelectorAll("[data-jump]").forEach(button=>{const selected=button.dataset.jump===year;button.classList.toggle("selected",selected);button.setAttribute("aria-pressed",String(selected));});
  const era=eras[year];
  document.querySelectorAll(".era-card").forEach(button=>{const active=button.dataset.year===year;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});
- $(".portal-year").textContent=year;
+ $(".portal-year").textContent=year;\n const chronoVector=$("#chrono-vector");if(chronoVector)chronoVector.textContent=year.toUpperCase();
  $("#console-title").innerHTML="BOOT INTO <em>"+year+".</em>";
  $("#console-description").textContent=era.intro;
  $("#console-identifier").textContent="CHRONO_TERMINAL // "+era.title;
