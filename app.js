@@ -1,15 +1,18 @@
 import { eras } from "./eras.js";
 
 // Browser-based historical shell interfaces. See README for implementation scope.
-let year="1991",cwd=[],history=[],historyIndex=0;
+let year="1991",cwd=[],history=[],historyIndex=0,bootToken=0;
 const $=selector=>document.querySelector(selector);
 const terminal=$("#terminal"),output=$("#output"),input=$("#command"),prompt=$("#prompt");
 const shell=$("#shell"),tips=$("#command-tips"),facts=$("#era-facts"),preview=$("#desktop-preview");
 const getPath=()=>"/"+cwd.join("/");
+const homePath=()=>year==="1991"?"/":"/home/visitor";
+const displayPath=()=>{const p=getPath();return p===homePath()?"~":p.startsWith(homePath()+"/")?"~"+p.slice(homePath().length):p;};
+const promptText=()=>year==="1991"?"# ":year==="1993"?"bash# ":year==="1998"?"[visitor@linux "+displayPath()+"]$ ":year==="2004"?"visitor@ubuntu:"+displayPath()+"$ ":"visitor@linux:"+displayPath()+"$ ";
 const normalize=value=>{const result=value.startsWith("/")?[]:[...cwd];for(const part of value.split("/")){if(!part||part===".")continue;if(part==="..")result.pop();else result.push(part)}return result;};
 const nodeAt=parts=>{let node=eras[year].files;for(const part of parts){if(!node||typeof node!=="object"||!Object.hasOwn(node,part))return null;node=node[part]}return node;};
 const print=(value,kind="")=>{const line=document.createElement("div");line.className="line "+kind;line.textContent=value;output.append(line);terminal.scrollTop=terminal.scrollHeight;};
-const updatePrompt=()=>{prompt.textContent="visitor@"+eras[year].prompt+":"+getPath()+"$";};
+const updatePrompt=()=>{prompt.textContent=promptText();};
 const commands=()=>["help","ls","pwd","cd","cat","echo","clear","date","uname","whoami","history","about","source","timeline","desktop"];
 function execute(line){
  const args=line.trim().split(/\s+/);const command=args[0],target=args[1]||".",node=nodeAt(normalize(target)),era=eras[year];
@@ -18,23 +21,23 @@ function execute(line){
  case "help":print("Available commands:\n"+commands().join("  ")+"\n\nTry the suggested commands below the terminal.");break;
  case "ls":print(node===null?"ls: no such file or directory":typeof node==="string"?target:Object.keys(node).sort().join("   "));break;
  case "pwd":print(getPath());break;
- case "cd":{const path=normalize(args[1]||"/");const dest=nodeAt(path);if(dest&&typeof dest==="object"){cwd=path;updatePrompt()}else print("cd: not a directory");break;}
+ case "cd":{const path=normalize(args[1]||homePath());const dest=nodeAt(path);if(dest&&typeof dest==="object"){cwd=path;updatePrompt()}else print("cd: not a directory");break;}
  case "cat":print(!args[1]?"cat: missing filename":node===null?"cat: file not found":typeof node==="object"?"cat: is a directory":node);break;
  case "echo":print(args.slice(1).join(" "));break;
  case "clear":output.replaceChildren();break;
- case "date":print(new Date().toString()+"");break;
+ case "date":print(new Date().toString());break;
  case "uname":print(args.includes("-r")?era.version:args.includes("-a")?"Linux "+era.prompt+" "+era.version+" i386 GNU/Linux":"Linux");break;
- case "whoami":print("visitor");break;
+ case "whoami":print(year==="1991"||year==="1993"?"root":"visitor");break;
  case "history":print(history.map((item,index)=>(index+1)+"  "+item).join("\n"));break;
  case "about":print(era.intro);break;
  case "source":print("Original Linux 0.01 archive: https://www.kernel.org/pub/linux/kernel/Historic/");break;
  case "timeline":print(Object.entries(eras).map(([key,item])=>key+" — "+item.title).join("\n"));break;
- case "desktop":print(year==="1991"?"1991: Linux 0.01 did not include a graphical desktop.":year==="1993"?"1993: early distributions could run graphical X environments, but this era focuses on the shell.":"Desktop environment loaded above the terminal.");break;
+ case "desktop":print(year==="1991"?"No graphical environment installed.":year==="1993"?"X Window System packages are available separately.":"DISPLAY=:0");break;
  default:print(command+": command not found");
  }
 }
-function submit(value){print("visitor@"+eras[year].prompt+":"+getPath()+"$ "+value,"entered");if(value.trim()){history.push(value);historyIndex=history.length;}execute(value);input.value="";terminal.scrollTop=terminal.scrollHeight;}
-function reset(){cwd=[];history=[];historyIndex=0;output.replaceChildren();input.value="";updatePrompt();input.focus();}
+function submit(value){print(promptText()+value,"entered");if(value.trim()){history.push(value);historyIndex=history.length;}execute(value);input.value="";terminal.scrollTop=terminal.scrollHeight;}
+function reset(){cwd=year==="1991"?[]:["home","visitor"];history=[];historyIndex=0;output.replaceChildren();input.value="";updatePrompt();input.focus();}
 function renderDesktop(era){
  preview.replaceChildren();const label=document.createElement("div");label.className="preview-label";label.textContent=era.desktop;preview.append(label);
  if(year==="1991"||year==="1993"){const panel=document.createElement("div");panel.className="preview-text";panel.textContent=year==="1991"?"NO GRAPHICAL DESKTOP\nLinux 0.01 was a kernel release.":"EARLY DISTRIBUTION ERA\nA shell-first historical overview.";preview.append(panel);return;}
@@ -44,6 +47,24 @@ function renderDesktop(era){
  const title=document.createElement("div");title.className="desktop-window-title";title.textContent="Welcome — "+year+"  ◻ ×";
  const content=document.createElement("div");content.className="desktop-window-content";content.textContent=year==="1998"?"Graphical Linux enters a new era.":year==="2004"?"Linux becomes a desktop option for more people.":"Linux powers the modern world.";
  window.append(title,content);scene.append(bar,window);preview.append(scene);
+}
+const banners={
+ "1991":["Linux version 0.01","Memory: 4096k available","tty0: console ready",""],
+ "1993":["Slackware Linux 1.0","Linux 0.99.13 (i386)","login: root","Last login: Thu Jul 22 09:14:00 on tty1",""],
+ "1998":["Linux 2.0.36 (i386)","Welcome to Linux","Last login: Tue Jul 14 10:25:00 on tty1",""],
+ "2004":["Ubuntu 4.10 \\n \\l","Linux 2.6.8 (i386)","Last login: Wed Oct 20 08:30:00 on tty1",""],
+ "2026":["Linux 6.x (x86_64)","Last login: Mon Nov 16 10:21:00 on tty1",""]
+};
+// Era banners are presentation text, not kernel-generated boot logs.
+function showBanner(){
+ const token=++bootToken;
+ const lines=banners[year];const element=$("#boot-description");
+ element.textContent="";
+ const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ if(reduced){element.textContent=lines.join("\\n")+"\\n";return;}
+ let i=0;
+ const add=()=>{if(token!==bootToken)return;if(i>=lines.length){return;}element.textContent+=lines[i++]+"\\n";terminal.scrollTop=terminal.scrollHeight;window.setTimeout(add,85);};
+ add();
 }
 function setEra(next){
  if(!Object.hasOwn(eras,next))return;
@@ -61,8 +82,8 @@ function setEra(next){
  renderDesktop(era);
 }
 shell.addEventListener("submit",event=>{event.preventDefault();submit(input.value);});
-input.addEventListener("keydown",event=>{if(event.key==="ArrowUp"){event.preventDefault();historyIndex=Math.max(0,historyIndex-1);input.value=history[historyIndex]||"";}else if(event.key==="ArrowDown"){event.preventDefault();historyIndex=Math.min(history.length,historyIndex+1);input.value=history[historyIndex]||"";}});
-$("#reset").addEventListener("click",reset);
+input.addEventListener("keydown",event=>{if(event.ctrlKey&&event.key.toLowerCase()==="l"){event.preventDefault();output.replaceChildren();$("#boot-description").textContent="";return;}if(event.key==="Tab"){event.preventDefault();const value=input.value;const parts=value.split(/\\s+/);const last=parts.pop()||"";const path=normalize(last||".");const parent=nodeAt(path.slice(0,-1));const prefix=path.at(-1)||"";const matches=parent&&typeof parent==="object"?Object.keys(parent).filter(name=>name.startsWith(prefix)):[];if(matches.length===1){parts.push(last.slice(0,last.length-prefix.length)+matches[0]);input.value=parts.join(" ");}else if(matches.length>1){print(matches.join("  "));}return;}if(event.key==="ArrowUp"){event.preventDefault();historyIndex=Math.max(0,historyIndex-1);input.value=history[historyIndex]||"";}else if(event.key==="ArrowDown"){event.preventDefault();historyIndex=Math.min(history.length,historyIndex+1);input.value=history[historyIndex]||"";}});
+$("#reset").addEventListener("click",()=>{reset();showBanner();});
 terminal.addEventListener("click",()=>input.focus());
 document.querySelectorAll(".era-card").forEach(button=>button.addEventListener("click",()=>{setEra(button.dataset.year);$("#terminal-section").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});}));
 setEra("1991");
