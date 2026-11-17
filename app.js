@@ -49,11 +49,11 @@ function renderDesktop(era){
  window.append(title,content);scene.append(bar,window);preview.append(scene);
 }
 const banners={
- "1991":["Linux version 0.01","Memory: 4096k available","tty0: console ready",""],
- "1993":["Slackware Linux 1.0","Linux 0.99.13 (i386)","login: root","Last login: Thu Jul 22 09:14:00 on tty1",""],
- "1998":["Linux 2.0.36 (i386)","Welcome to Linux","Last login: Tue Jul 14 10:25:00 on tty1",""],
- "2004":["Ubuntu 4.10 (Warty Warthog)","Linux 2.6.8 (i386)","Last login: Wed Oct 20 08:30:00 on tty1",""],
- "2026":["Linux 6.x (x86_64)","Last login: Mon Nov 16 10:21:00 on tty1",""]
+ "1991":["Linux 0.01  (i386)","tty0: console ready",""],
+ "1993":["Slackware Linux 1.0","Linux 0.99.13 (i386)","login: root",""],
+ "1998":["Linux 2.0.36 (i386)","Welcome to Linux",""],
+ "2004":["Ubuntu 4.10 (Warty Warthog)","Linux 2.6.8 (i386)",""],
+ "2026":["Linux 6.x (x86_64)",""]
 };
 // Era banners are presentation text, not kernel-generated boot logs.
 function showBanner(){
