@@ -40,11 +40,11 @@ export const eras = {
   "usr":{"share":{"applications":{}}},
   facts:["Ubuntu 4.10 ('Warty Warthog') launched in October 2004.","Linux 2.6 was introduced in late 2003 and widely used in 2004.","Ubuntu 4.10 shipped with the GNOME desktop."]
  },
- "2026": {
-  title:"THE NEXT FRONTIER",subtitle:"MODERN OPEN SOURCE",version:"6.x",context:"2026 · Containers, cloud and open ecosystems",desktop:"MODERN LINUX",prompt:"linux2026",
+ "today": {
+  title:"THE NEXT FRONTIER",subtitle:"MODERN OPEN SOURCE",version:"6.x",context:"Today · Containers, cloud and open ecosystems",desktop:"MODERN LINUX",prompt:"linux",
   intro:"Linux powers servers, phones, containers, embedded devices, supercomputers and desktop workstations. Linux continues to evolve across computing platforms.",
   commands:[["cat /etc/os-release","Inspect distribution identity"],["uname -a","Display system details"],["ls /home/visitor/Projects","Explore projects"],["id","Inspect user and groups"],["env","Display environment"],["desktop","Explore modern desktop"]],
-  files:{"README":"2026: Linux is everywhere.\nModern Linux spans many distributions and environments.",
+  files:{"README":"Today: Linux is everywhere.\nModern Linux spans many distributions and environments.",
   "etc":{"os-release":"NAME=\"Linux\"\nPRETTY_NAME=\"Linux 2026\"","issue":"Linux 2026"},
   "home":{"visitor":{"Desktop":{"Welcome.txt":"Open source keeps evolving."},"Projects":{"README":"Containers, cloud, security and Linux."},"Documents":{}}},
   "usr":{"share":{"applications":{}}},
