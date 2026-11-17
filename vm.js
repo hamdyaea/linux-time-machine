@@ -75,7 +75,7 @@
    releaseDisk();
   }finally{starting=false;}
  });
- if(new URLSearchParams(location.search).get("autostart")==="1") {
+ if(document.getElementById("real-linux-home") || new URLSearchParams(location.search).get("autostart")==="1") {
   window.addEventListener("load",()=>start.click(),{once:true});
  }
  stop.addEventListener("click",()=>{
