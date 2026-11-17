@@ -81,7 +81,7 @@ function showBanner(){
 const realKernelEras=new Set(["1991","1993"]);
 let realKernelAvailable=false;
 async function checkRealKernelAssets(){
- const paths=["/vendor/v86/libv86.js","/vendor/v86/v86.wasm","/vendor/v86/seabios.bin","/vendor/v86/vgabios.bin","/images/linux-0.01-floppy.img","/images/linux-0.01-hda.img"];
+ const paths=["/vendor/v86/libv86.js","/vendor/v86/v86.wasm","/vendor/v86/seabios.bin","/vendor/v86/vgabios.bin","/images/linux-0.01-floppy.img","/images/linux-0.01-hda.img.gz"];
  try{
   const results=await Promise.all(paths.map(async path=>{
    const response=await fetch(path,{method:"HEAD",cache:"no-store"});
