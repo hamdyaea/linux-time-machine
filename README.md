@@ -9,13 +9,15 @@
 
 - Original 2027-style time-travel interface: neon cyan, copper, sci-fi portal and an original generic futuristic vehicle illustration (all CSS; no movie assets)
 - Interactive 1991 educational shell reconstruction
-- Five selectable educational eras: 1991, 1993, 1998, 2004, and 2026\n- Era-specific simulated filesystems, historical context, commands, and clickable command suggestions\n- Original illustrative desktop concepts for 1998, 2004, and 2026 (not real historical desktops)
+- Five selectable educational eras: 1991, 1993, 1998, 2004, and 2026
+- Era-specific simulated filesystems, historical context, commands, and clickable command suggestions
+- Original illustrative desktop concepts for 1998, 2004, and 2026 (not real historical desktops)
 - Responsive layout, keyboard command history, reduced-motion support
 - No backend or server-side computation required
 
-### Important historical distinction
+## Historical accuracy
 
-The terminal is a **simulation**, not a real Linux 0.01 boot. Its commands operate on a small in-memory representation of source tree concepts. The authentic 1991 kernel source can be found at https://www.kernel.org/pub/linux/kernel/Historic/.
+Linux Time Machine recreates the look and workflows of selected Linux eras in the browser. The current terminal is implemented in JavaScript and its files are representative, not an original operating-system image. We intentionally keep implementation notes here rather than interrupting the experience with repeated notices. Exact historical source code is available at https://www.kernel.org/pub/linux/kernel/Historic/. A future v86 integration may add real guest execution.
 
 ## Cloudflare Pages deployment
 
