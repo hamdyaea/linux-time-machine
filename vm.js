@@ -6,7 +6,7 @@
   wasm:"/vendor/v86/v86.wasm",
   bios:"/vendor/v86/seabios.bin",
   vga:"/vendor/v86/vgabios.bin",
-  floppy:"/images/linux-0.01-floppy.img",
+  floppy:"/images/linux-0.01-floppy-1440k.img",
   disk:"/images/linux-0.01-hda.img.gz"
  };
  let vm=null,starting=false,bootTimer=null,diskUrl=null;
@@ -56,7 +56,7 @@
     wasm_path:paths.wasm,memory_size:8*1024*1024,vga_memory_size:2*1024*1024,
     screen_container:document.getElementById("screen_container"),
     bios:{url:paths.bios},vga_bios:{url:paths.vga},
-    fda:{url:paths.floppy},hda:{url:diskUrl},boot_order:0x213,autostart:true
+    fda:{url:paths.floppy},hdb:{url:diskUrl},boot_order:0x213,autostart:true
    });
    bootTimer=setTimeout(()=>{
     bootTimer=null;
@@ -74,6 +74,9 @@
    releaseDisk();
   }finally{starting=false;}
  });
+ if(new URLSearchParams(location.search).get("autostart")==="1") {
+  window.addEventListener("load",()=>start.click(),{once:true});
+ }
  stop.addEventListener("click",()=>{
   clearBootTimer();
   if(vm){try{vm.stop();vm.destroy();}catch{}vm=null;}
