@@ -34,3 +34,34 @@
 .era-knowledge ul{padding-left:20px;margin:12px 0 0;color:#a3bccc;font-size:13px;line-height:1.9}
 @media(max-width:750px){.command-tips{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:470px){.command-tips{grid-template-columns:1fr}.era-card{padding:13px}.desktop-window{left:9%;width:82%}}
+
+/* Authentic-inspired monochrome console, visually isolated from the time-machine UI. */
+.console-shell{--phosphor:#54f879;--dim:#248e43;--screen:#010302;background:#000;border:9px solid #151b19;border-radius:10px;box-shadow:inset 0 0 0 2px #344039,0 22px 60px #000b,0 0 40px #0cff3920;overflow:hidden}
+.console-top{background:linear-gradient(#303630,#1b211c);border-bottom:2px solid #080b08;color:#c6d3c6;font:600 11px ui-monospace,monospace;height:42px}
+.console-lights i{background:#576259!important;width:6px;height:6px;box-shadow:none}
+.console-lights i:first-child{background:#ff7d53!important}
+.console-top button{background:#18241a;border:1px solid #4a644f;color:#b6d3b9;font:600 10px ui-monospace,monospace}
+.console-meta,.console-footer{background:#050b06;color:var(--dim);border-color:#14281b;font:11px ui-monospace,monospace;letter-spacing:0}
+.console-meta b{color:var(--phosphor)}
+.terminal{position:relative;background:var(--screen);color:var(--phosphor);height:490px;padding:22px 24px;font:15px/1.45 'Courier New',Courier,monospace;letter-spacing:.012em;text-shadow:0 0 5px #3df36b4f;isolation:isolate;scrollbar-color:#285c34 #000}
+.terminal::before{content:"";pointer-events:none;position:sticky;display:block;top:-22px;height:0;z-index:5}
+.terminal::after{content:"";pointer-events:none;position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0,transparent 3px,#00000022 4px);opacity:.32;z-index:4}
+.boot,.line,.entered,#prompt,#command{color:var(--phosphor)!important;text-shadow:0 0 5px #3df36b4f}
+.boot{white-space:pre-wrap;margin-bottom:10px}
+.line{min-height:1.45em}
+.entered{margin-top:5px}
+#shell{align-items:center;gap:8px}
+#command{caret-color:var(--phosphor);font:inherit;letter-spacing:inherit}
+#command::selection{background:var(--phosphor);color:#000}
+#prompt{white-space:pre-wrap}
+.console-shell[data-era="1991"]{--phosphor:#55ff70;--dim:#33844a}
+.console-shell[data-era="1993"]{--phosphor:#66ef83;--dim:#3b9157}
+.console-shell[data-era="1998"]{--phosphor:#78ff8b;--dim:#45985b}
+.console-shell[data-era="2004"]{--phosphor:#8bff96;--dim:#4b9e5e}
+.console-shell[data-era="2026"]{--phosphor:#a2ffb0;--dim:#509d67}
+.console-shell[data-era="1991"] .console-top{background:linear-gradient(#242824,#101510)}
+.console-shell[data-era="2004"] .console-top,.console-shell[data-era="2026"] .console-top{background:linear-gradient(#303b32,#1d2921)}
+.console-shell.is-booting .terminal{animation:screen-wake .36s ease-out}
+@keyframes screen-wake{0%{filter:brightness(2);transform:scaleY(.02)}45%{filter:brightness(1.5);transform:scaleY(1)}100%{filter:brightness(1);transform:scaleY(1)}}
+@media(max-width:650px){.console-shell{border-width:5px}.terminal{font-size:12px;height:410px;padding:15px 12px}.console-meta,.console-footer{font-size:9px}.console-top{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.console-shell.is-booting .terminal{animation:none}}
