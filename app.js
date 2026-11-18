@@ -99,9 +99,32 @@ function updateKernelPanel(){
  title.textContent="1993 / HISTORICAL KERNEL";
  detail.textContent="A verified 1993 kernel and matching distribution disk have not yet been prepared. The terminal below is an interactive historical shell.";
 }
+async function initializeTemporalEngine(){
+ const img=document.querySelector(".temporal-gallery img");
+ if(!img)return;
+ try{
+  const response=await fetch(img.getAttribute("src"));
+  if(!response.ok)throw Error("HTTP "+response.status);
+  const svg=new DOMParser().parseFromString(await response.text(),"image/svg+xml").documentElement;
+  if(svg.localName!=="svg"||!svg.querySelector("#temporal-engine-year"))throw Error("Invalid temporal SVG");
+  svg.classList.add("temporal-engine-live");
+  svg.setAttribute("aria-label","Temporal engine destination "+year);
+  img.replaceWith(document.importNode(svg,true));
+  updateTemporalEngine();
+ }catch(error){console.warn("Temporal engine unavailable:",error);}
+}
+function updateTemporalEngine(){
+ const svg=document.querySelector(".temporal-engine-live");
+ if(!svg)return;
+ svg.querySelector("#temporal-engine-year").textContent=year.toUpperCase();
+ svg.querySelector("#temporal-engine-coordinates").textContent=year.toUpperCase()+" → TODAY";
+ svg.setAttribute("aria-label","Temporal engine destination "+year);
+ const caption=document.querySelector(".temporal-gallery-caption span:last-child");
+ if(caption)caption.textContent=year.toUpperCase()+" → TODAY";
+}
 function setEra(next){
  if(!Object.hasOwn(eras,next))return;
- year=next;reset();updateKernelPanel();
+ year=next;reset();updateKernelPanel();updateTemporalEngine();
  const realHome=$("#real-linux-home"),historicalShell=$("#console-shell");
  if(realHome){realHome.hidden=year!=="1991"&&year!=="1993";realHome.dataset.guestYear=year;}
  if(historicalShell)historicalShell.hidden=year==="1991"||year==="1993";
@@ -169,4 +192,5 @@ terminal.addEventListener("click",()=>input.focus());
 document.querySelectorAll("[data-jump]").forEach(button=>button.addEventListener("click",()=>setEra(button.dataset.jump)));
 document.querySelectorAll(".era-card").forEach(button=>button.addEventListener("click",()=>{setEra(button.dataset.year);$("#terminal-section").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});}));
 setEra("1991");
+void initializeTemporalEngine();
 checkRealKernelAssets();
