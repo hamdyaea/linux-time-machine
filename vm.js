@@ -7,10 +7,11 @@
  const guests={
   "1991":{floppy:"/images/linux-0.01-floppy-1440k.img",disk:"/images/linux-0.01-hda.img.gz",master:"/images/linux-0.01-ide-master-placeholder.img",size:40*1024*1024,memory:8*1024*1024},
   "1993":{floppy:"/images/linux-0.99.12-floppy.img",diskPartsPrefix:"/images/slackware-1.01-1993.raw.gz.part-",memory:16*1024*1024},
-  "1998":{diskPartsPrefix:"/images/redhat-5.2-1998.raw.gz.part-",memory:64*1024*1024}
+  "1998":{diskPartsPrefix:"/images/redhat-5.2-1998.raw.gz.part-",memory:64*1024*1024},
+  "2004":{diskPartsPrefix:"/images/ubuntu-4.10-2004.raw.gz.part-",memory:128*1024*1024}
  };
  const home=document.getElementById("real-linux-home");
- const selected=()=>{if(home)return home.dataset.guestYear||"1991";const era=new URLSearchParams(location.search).get("era");return ["1991","1993","1998"].includes(era)?era:"1991";};
+ const selected=()=>{if(home)return home.dataset.guestYear||"1991";const era=new URLSearchParams(location.search).get("era");return ["1991","1993","1998","2004"].includes(era)?era:"1991";};
  let vm=null,starting=false,bootTimer=null,diskUrl=null,runId=0,activeYear=null;
  const report=message=>{status.textContent=message;};
  const releaseDisk=()=>{if(diskUrl){URL.revokeObjectURL(diskUrl);diskUrl=null;}};
@@ -75,7 +76,7 @@
     screen_container:document.getElementById("screen_container"),
     bios:{url:common.bios},vga_bios:{url:common.vga},
     hda:{url:year==="1991"?config.master:diskUrl},
-    boot_order:year==="1998"?0x132:0x213,autostart:true
+    boot_order:year==="1998"||year==="2004"?0x132:0x213,autostart:true
    };
    if(config.floppy)options.fda={url:config.floppy};
    if(year==="1991")options.hdb={url:diskUrl};
@@ -104,7 +105,7 @@
  window.addEventListener("linux-time-machine-era-change",event=>{
   if(!home)return;
   const year=event.detail?.year;
-  if(year!=="1991"&&year!=="1993"&&year!=="1998"){shutdown();return;}
+  if(year!=="1991"&&year!=="1993"&&year!=="1998"&&year!=="2004"){shutdown();return;}
   if(activeYear===year&&(vm||starting))return;
   shutdown();
   home.dataset.guestYear=year;
