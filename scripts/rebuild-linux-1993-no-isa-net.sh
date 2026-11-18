@@ -34,19 +34,23 @@ PY
 # Editing .config alone leaves the actual driver probes enabled.
 python3 - "$SRC/include/linux/autoconf.h" "$SRC/net/inet/CONFIG" <<'PY'
 from pathlib import Path
-import re,sys
-header,netmap=map(Path,sys.argv[1:])
-keys=["CONFIG_ETHERCARDS","CONFIG_NE2000","CONFIG_WD80x3","CONFIG_EL2",
-      "CONFIG_HPLAN","CONFIG_AT1500","CONFIG_DE600","CONFIG_PLIP","CONFIG_SLIP"]
-s=header.read_text()
+import re, sys
+header, netmap = map(Path, sys.argv[1:])
+keys = ["CONFIG_ETHERCARDS", "CONFIG_NE2000", "CONFIG_WD80x3", "CONFIG_EL2",
+        "CONFIG_HPLAN", "CONFIG_AT1500", "CONFIG_DE600", "CONFIG_PLIP", "CONFIG_SLIP"]
+s = header.read_text()
+# Repair previous faulty run which inserted literal backslash-n sequences.
+s = s.replace(r"\n#undef CONFIG_", "\n#undef CONFIG_")
+s = re.sub(r"(?m)^\\n$", "", s)
 for key in keys:
-    s=re.sub(r"(?m)^\\s*#\\s*(?:define|undef)\\s+"+re.escape(key)+r"\\b[^\\n]*$", "", s)
-    s+="\\n#undef "+key
-header.write_text(s+"\\n")
-n=netmap.read_text()
-n=re.sub(r"(?m)^(\\s*CARDS\\s*:?=\\s*\\$\\(CARDS\\)\\s+-D(?:WD80x3|NE2000|HPLAN|EL2|D_LINK|CONFIG_AT1500)\\b)",r"# disabled for v86: \\1",n)
+    s = re.sub(r"(?m)^[ \t]*#[ \t]*(?:define|undef)[ \t]+" + re.escape(key) + r"\b[^\n]*\n?", "", s)
+s = s.rstrip("\n") + "\n" + "".join("#undef " + key + "\n" for key in keys)
+header.write_text(s)
+n = netmap.read_text()
+n = re.sub(r"(?m)^[ \t]*CARDS[ \t]*:?=[ \t]*\$\(CARDS\)[ \t]+-D(?:WD80x3|NE2000|HPLAN|EL2|D_LINK|CONFIG_AT1500)\b[^\n]*$", lambda m: "# disabled for v86: " + m.group(0), n)
 netmap.write_text(n)
-print("Updated autoconf.h and net/inet/CONFIG; ISA network probes disabled")
+assert r"\n#undef CONFIG_" not in header.read_text()
+print("Repaired autoconf.h; disabled ISA network probes in net/inet/CONFIG")
 PY
 docker run --rm --platform linux/amd64 \
  -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
