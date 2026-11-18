@@ -10,7 +10,7 @@ Create an **R2 Standard** bucket named `linux-time-machine` (private, no public 
 npx wrangler d1 create linux-time-machine-quota
 ```
 
-Record the returned D1 database ID. Add `worker/wrangler.toml` locally from this template:
+The D1 database was created and `worker/wrangler.toml` is now committed with its ID. Confirm the bucket name and public website origin before deploying. The effective configuration is:
 
 ```toml
 name = "linux-time-machine-disk"
@@ -29,7 +29,7 @@ bucket_name = "linux-time-machine"
 [[d1_databases]]
 binding = "QUOTA"
 database_name = "linux-time-machine-quota"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "5021046e-c696-4793-b804-3cb292a50537"
 ```
 
 Verify the actual production origin and R2 bucket name before deployment.
