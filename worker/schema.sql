@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS usage (
+  key TEXT PRIMARY KEY NOT NULL,
+  requests INTEGER NOT NULL DEFAULT 0 CHECK (requests >= 0)
+);
