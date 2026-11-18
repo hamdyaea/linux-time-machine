@@ -72,9 +72,23 @@ if [[ -s "$REDHAT_QCOW" ]]; then
 else
  echo "1998 compact guest not found at $REDHAT_QCOW; skipping Red Hat image." >&2
 fi
+UBUNTU_QCOW="$ROOT/.work/linux-2004/ubuntu-4.10.qcow2"
+rm -f "$OUT"/images/ubuntu-4.10-2004.raw.gz.part-*
+if [[ -s "$UBUNTU_QCOW" ]]; then
+ UBUNTU_BYTES="$(qemu-img info --output=json "$UBUNTU_QCOW" | python3 -c 'import json,sys; print(json.load(sys.stdin)["virtual-size"])')"
+ if (( UBUNTU_BYTES >= 2147483648 )); then echo "ERROR: Ubuntu 2004 disk must be smaller than 2 GiB" >&2; exit 1; fi
+ RAW_2004="$ROOT/.work/linux-2004/ubuntu-2004.tmp.raw"
+ qemu-img convert -f qcow2 -O raw -S 4k "$UBUNTU_QCOW" "$RAW_2004"
+ gzip -n -9 -c "$RAW_2004" | split -b 20m -d -a 3 - "$OUT/images/ubuntu-4.10-2004.raw.gz.part-"
+ rm -f "$RAW_2004"
+ echo "2004 disk split into $(find "$OUT/images" -maxdepth 1 -name 'ubuntu-4.10-2004.raw.gz.part-*' | wc -l) parts"
+else
+ echo "2004 guest not found at $UBUNTU_QCOW; skipping Ubuntu image." >&2
+fi
 (
  cd "$OUT"
  sha256sum images/linux-0.01-floppy-1440k.img images/linux-0.01-ide-master-placeholder.img images/linux-0.01-hda.img.gz vendor/v86/{libv86.js,v86.wasm,seabios.bin,vgabios.bin} > SHA256SUMS
+ if [[ -s images/ubuntu-4.10-2004.raw.gz.part-000 ]]; then sha256sum images/ubuntu-4.10-2004.raw.gz.part-* >> SHA256SUMS; fi
  if [[ -s images/redhat-5.2-1998.raw.gz.part-000 ]]; then sha256sum images/redhat-5.2-1998.raw.gz.part-* >> SHA256SUMS; fi
  if [[ -s images/slackware-1.01-1993.raw.gz.part-000 ]]; then sha256sum images/linux-0.99.12-floppy.img images/slackware-1.01-1993.raw.gz.part-* >> SHA256SUMS; fi
 )
