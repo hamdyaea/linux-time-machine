@@ -44,8 +44,11 @@ rm -f "$OUT/images/linux-0.99.12-floppy.img" "$OUT/images/slackware-1.01-1993.ra
 if [[ -s "$SLACKWARE_QCOW" && -s "$FLOPPY_1993" ]]; then
  command -v qemu-img >/dev/null || { echo "qemu-img required for 1993 guest" >&2; exit 1; }
  cp "$FLOPPY_1993" "$OUT/images/linux-0.99.12-floppy.img"
- # Avoid keeping a large raw image on disk: qemu-img streams into gzip.
- qemu-img convert -f qcow2 -O raw "$SLACKWARE_QCOW" /dev/stdout | gzip -n -9 > "$OUT/images/slackware-1.01-1993.raw.gz"
+ # qemu-img needs a seekable destination; use a temporary sparse raw image.
+ RAW_1993="$ROOT/.work/linux-1993/slackware-1993.tmp.raw"
+ qemu-img convert -f qcow2 -O raw -S 4k "$SLACKWARE_QCOW" "$RAW_1993"
+ gzip -n -9 -c "$RAW_1993" > "$OUT/images/slackware-1.01-1993.raw.gz"
+ rm -f "$RAW_1993"
  if [[ ! -s "$OUT/images/slackware-1.01-1993.raw.gz" ]]; then echo "1993 disk compression failed" >&2; exit 1; fi
  echo "1993 compressed disk: $(du -h "$OUT/images/slackware-1.01-1993.raw.gz")"
 else
