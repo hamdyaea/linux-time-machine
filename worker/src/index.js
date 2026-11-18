@@ -61,7 +61,7 @@ export default {
         });
       }
       const range = request.headers.get("Range");
-      const match = /^bytes=(\\d+)-(\\d*)$/.exec(range || "");
+      const match = /^bytes=(\d+)-(\d*)$/.exec(range || "");
       if (!match) return response("Byte range required", 416, origin, env);
       const start = Number(match[1]);
       const end = match[2] ? Number(match[2]) : Math.min(start + MAX_RANGE - 1, meta.size - 1);
