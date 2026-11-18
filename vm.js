@@ -10,7 +10,7 @@
   "1998":{diskPartsPrefix:"/images/redhat-5.2-1998.raw.gz.part-",memory:64*1024*1024}
  };
  const home=document.getElementById("real-linux-home");
- const selected=()=>home?(home.dataset.guestYear||"1991"):(new URLSearchParams(location.search).["1991","1993","1998"].includes(new URLSearchParams(location.search).get("era"))?new URLSearchParams(location.search).get("era"):"1991");
+ const selected=()=>{if(home)return home.dataset.guestYear||"1991";const era=new URLSearchParams(location.search).get("era");return ["1991","1993","1998"].includes(era)?era:"1991";};
  let vm=null,starting=false,bootTimer=null,diskUrl=null,runId=0,activeYear=null;
  const report=message=>{status.textContent=message;};
  const releaseDisk=()=>{if(diskUrl){URL.revokeObjectURL(diskUrl);diskUrl=null;}};
