@@ -191,3 +191,5 @@
 .linux001-facts code{color:#9deac1}
 .linux001-facts-source{font-size:11px;color:#89a89b}
 .linux001-facts-source a{color:#8ce2b8;text-decoration:underline;text-underline-offset:2px}
+
+.temporal-gallery .temporal-engine-live{display:block;width:100%;height:auto;max-width:100%;}
