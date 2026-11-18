@@ -112,6 +112,12 @@
   void boot();
  });
  if(home||new URLSearchParams(location.search).get("autostart")==="1"){
-  window.addEventListener("load",()=>{if(!vm&&!starting)void boot();},{once:true});
+  const initialBoot=()=>{if(!vm&&!starting)void boot();};
+  if(document.readyState==="complete")queueMicrotask(initialBoot);
+  else window.addEventListener("load",initialBoot,{once:true});
+  // The page may have finished loading before this script registered its load handler.
+  // DOMContentLoaded is an additional safe startup path; boot() is idempotent.
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initialBoot,{once:true});
+  else queueMicrotask(initialBoot);
  }
 })();
