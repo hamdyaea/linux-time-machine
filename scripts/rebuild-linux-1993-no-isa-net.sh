@@ -53,6 +53,21 @@ netmap.write_text(n)
 assert r"\n#undef CONFIG_" not in header.read_text()
 print("Repaired autoconf.h; disabled ISA network probes in net/inet/CONFIG")
 PY
+# Explicitly remove the legacy 8390/NE2000 device from the 1993 boot probe
+# chain. The driver may still be linked, but cannot be auto-probed.
+python3 - "$SRC/net/inet/Space.c" <<'PY'
+from pathlib import Path
+import re,sys
+p=Path(sys.argv[1])
+s=p.read_text()
+pattern=r"(?m)^#if defined\(EI8390\) \|\| defined\(CONFIG_EL2\) \|\| defined\(CONFIG_NE2000\)"
+if re.search(pattern,s):
+    s=re.sub(pattern, "#if 0 /* v86: disable legacy 8390/NE2000 ISA autoprobe */", s, count=1)
+elif "#if 0 /* v86: disable legacy 8390/NE2000 ISA autoprobe */" not in s:
+    raise SystemExit("Cannot locate 8390 device block in Space.c; refusing unverified patch")
+p.write_text(s)
+print("Disabled 8390/NE2000 device initialization in Space.c")
+PY
 docker run --rm --platform linux/amd64 \
  -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
  -v "$SRC:/src" -w /src ubuntu:20.04 bash -euc '
