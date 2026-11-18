@@ -6,7 +6,7 @@
  const common={wasm:"/vendor/v86/v86.wasm",bios:"/vendor/v86/seabios.bin",vga:"/vendor/v86/vgabios.bin"};
  const guests={
   "1991":{floppy:"/images/linux-0.01-floppy-1440k.img",disk:"/images/linux-0.01-hda.img.gz",master:"/images/linux-0.01-ide-master-placeholder.img",size:40*1024*1024,memory:8*1024*1024},
-  "1993":{floppy:"/images/linux-0.99.12-floppy.img",disk:"/images/slackware-1.01-1993.raw.gz",memory:16*1024*1024}
+  "1993":{floppy:"/images/linux-0.99.12-floppy.img",diskPartsPrefix:"/images/slackware-1.01-1993.raw.gz.part-",memory:16*1024*1024}
  };
  const home=document.getElementById("real-linux-home");
  const selected=()=>home?(home.dataset.guestYear||"1991"):(new URLSearchParams(location.search).get("era")==="1993"?"1993":"1991");
@@ -23,11 +23,28 @@
  async function loadDisk(config,year){
   if(typeof DecompressionStream!=="function")throw Error("Browser lacks gzip DecompressionStream");
   report("Downloading "+year+" historical disk...");
-  const response=await fetch(config.disk,{cache:"no-store"});
-  if(!response.ok||!response.body)throw Error("Disk download failed: HTTP "+response.status);
-  if((response.headers.get("content-type")||"").includes("text/html"))throw Error("Disk URL returned HTML");
+  let compressed;
+  if(config.diskPartsPrefix){
+   const chunks=[];
+   for(let i=0;i<100;i++){
+    const url=config.diskPartsPrefix+String(i).padStart(3,"0");
+    const response=await fetch(url,{cache:"no-store"});
+    if(response.status===404&&i>0)break;
+    if(!response.ok)throw Error("Disk part "+i+" failed: HTTP "+response.status);
+    if((response.headers.get("content-type")||"").includes("text/html"))throw Error("Disk part "+i+" returned HTML");
+    chunks.push(await response.arrayBuffer());
+    report("Downloading "+year+" disk: "+chunks.length+" part(s)...");
+   }
+   if(!chunks.length)throw Error("No 1993 disk parts found");
+   compressed=new Blob(chunks,{type:"application/gzip"}).stream();
+  }else{
+   const response=await fetch(config.disk,{cache:"no-store"});
+   if(!response.ok||!response.body)throw Error("Disk download failed: HTTP "+response.status);
+   if((response.headers.get("content-type")||"").includes("text/html"))throw Error("Disk URL returned HTML");
+   compressed=response.body;
+  }
   report("Decompressing "+year+" IDE disk in browser memory...");
-  const buffer=await new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
+  const buffer=await new Response(compressed.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
   if(config.size&&buffer.byteLength!==config.size&&buffer.byteLength!==40000000)throw Error("Unexpected disk image size: "+buffer.byteLength);
   if(buffer.byteLength<1024*1024||buffer.byteLength%512!==0)throw Error("Invalid IDE disk size: "+buffer.byteLength);
   return buffer;
@@ -41,7 +58,7 @@
   try{
    if(typeof window.V86Starter!=="function"&&typeof window.V86!=="function")throw Error("v86 JavaScript is not loaded");
    report("Checking Linux "+year+" boot assets...");
-   await Promise.all([...Object.values(common),...Object.values(config).filter(v=>typeof v==="string")].map(verify));
+   await Promise.all([...Object.values(common),...Object.entries(config).filter(([key,v])=>typeof v==="string"&&key!=="diskPartsPrefix").map(([,v])=>v),...(config.diskPartsPrefix?[config.diskPartsPrefix+"000"]:[])].map(verify));
    if(token!==runId)return;
    const disk=await loadDisk(config,year);
    if(token!==runId)return;
