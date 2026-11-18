@@ -4,7 +4,7 @@ compatibility_date = "2026-11-18"
 workers_dev = true
 
 [vars]
-SITE_ORIGIN = "https://linuxtimemachine.org"
+SITE_ORIGIN = "https://linux-time-machine.pages.dev"
 DISK_KEY = "ubuntu-4.10-2004.raw"
 
 [[r2_buckets]]
