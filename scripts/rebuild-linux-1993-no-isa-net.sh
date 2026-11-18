@@ -30,6 +30,24 @@ for key in keys:
 p.write_text(s)
 print("Disabled legacy network drivers:",", ".join(keys))
 PY
+# This 1993 tree uses generated autoconf.h and net/inet/CONFIG in addition to .config.
+# Editing .config alone leaves the actual driver probes enabled.
+python3 - "$SRC/include/linux/autoconf.h" "$SRC/net/inet/CONFIG" <<'PY'
+from pathlib import Path
+import re,sys
+header,netmap=map(Path,sys.argv[1:])
+keys=["CONFIG_ETHERCARDS","CONFIG_NE2000","CONFIG_WD80x3","CONFIG_EL2",
+      "CONFIG_HPLAN","CONFIG_AT1500","CONFIG_DE600","CONFIG_PLIP","CONFIG_SLIP"]
+s=header.read_text()
+for key in keys:
+    s=re.sub(r"(?m)^\\s*#\\s*(?:define|undef)\\s+"+re.escape(key)+r"\\b[^\\n]*$", "", s)
+    s+="\\n#undef "+key
+header.write_text(s+"\\n")
+n=netmap.read_text()
+n=re.sub(r"(?m)^(\\s*CARDS\\s*:?=\\s*\\$\\(CARDS\\)\\s+-D(?:WD80x3|NE2000|HPLAN|EL2|D_LINK|CONFIG_AT1500)\\b)",r"# disabled for v86: \\1",n)
+netmap.write_text(n)
+print("Updated autoconf.h and net/inet/CONFIG; ISA network probes disabled")
+PY
 docker run --rm --platform linux/amd64 \
  -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
  -v "$SRC:/src" -w /src ubuntu:20.04 bash -euc '
