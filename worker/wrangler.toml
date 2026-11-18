@@ -1,0 +1,17 @@
+name = "linux-time-machine-disk"
+main = "src/index.js"
+compatibility_date = "2026-11-18"
+workers_dev = true
+
+[vars]
+SITE_ORIGIN = "https://linuxtimemachine.org"
+DISK_KEY = "ubuntu-4.10-2004.raw"
+
+[[r2_buckets]]
+binding = "DISK"
+bucket_name = "linux-time-machine"
+
+[[d1_databases]]
+binding = "QUOTA"
+database_name = "linux-time-machine-quota"
+database_id = "5021046e-c696-4793-b804-3cb292a50537"
