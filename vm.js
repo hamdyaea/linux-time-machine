@@ -31,7 +31,10 @@
     const response=await fetch(url,{cache:"no-store"});
     if(response.status===404&&i>0)break;
     if(!response.ok)throw Error("Disk part "+i+" failed: HTTP "+response.status);
-    if((response.headers.get("content-type")||"").includes("text/html"))throw Error("Disk part "+i+" returned HTML");
+    if((response.headers.get("content-type")||"").includes("text/html")){
+     if(i>0)break;
+     throw Error("Disk part "+i+" returned HTML");
+    }
     chunks.push(await response.arrayBuffer());
     report("Downloading "+year+" disk: "+chunks.length+" part(s)...");
    }
