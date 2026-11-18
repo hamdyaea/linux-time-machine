@@ -43,7 +43,7 @@ FLOPPY="$WORK/linux-0.99.12-floppy.img"
 truncate -s 1474560 "$FLOPPY"
 dd if="$SRC/zImage" of="$FLOPPY" conv=notrunc status=none
 # Linux 0.99 boot protocol: bytes 508-509 encode /dev/hda1 (major 3, minor 1).
-printf '%b' '\x5cx01\x5cx03' | dd of="$FLOPPY" bs=1 seek=508 conv=notrunc status=none
+printf '\x01\x03' | dd of="$FLOPPY" bs=1 seek=508 conv=notrunc status=none
 echo "Ready for local QEMU validation (NOT yet browser-tested):"
 echo "  qemu-system-i386 -machine pc -m 16 -cpu pentium2 -nic none -drive if=floppy,format=raw,file='$FLOPPY' -drive if=ide,index=0,format=qcow2,file='$DISK',snapshot=on -boot order=a"
 echo "Only after QEMU succeeds: convert the qcow2 to raw, compress and test v86."
