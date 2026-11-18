@@ -94,7 +94,7 @@ async function checkRealKernelAssets(){
 function updateKernelPanel(){
  const panel=$("#kernel-boot-panel"),detail=$("#kernel-boot-detail"),title=$("#kernel-boot-title");
  if(!panel)return;
- panel.hidden=year!=="1993";
+ panel.hidden=true;
  if(panel.hidden)return;
  title.textContent="1993 / HISTORICAL KERNEL";
  detail.textContent="A verified 1993 kernel and matching distribution disk have not yet been prepared. The terminal below is an interactive historical shell.";
@@ -103,8 +103,9 @@ function setEra(next){
  if(!Object.hasOwn(eras,next))return;
  year=next;reset();updateKernelPanel();
  const realHome=$("#real-linux-home"),historicalShell=$("#console-shell");
- if(realHome)realHome.hidden=year!=="1991";
- if(historicalShell)historicalShell.hidden=year==="1991";
+ if(realHome){realHome.hidden=year!=="1991"&&year!=="1993";realHome.dataset.guestYear=year;}
+ if(historicalShell)historicalShell.hidden=year==="1991"||year==="1993";
+ window.dispatchEvent(new CustomEvent("linux-time-machine-era-change",{detail:{year}}));
  document.querySelectorAll("[data-jump]").forEach(button=>{const selected=button.dataset.jump===year;button.classList.toggle("selected",selected);button.setAttribute("aria-pressed",String(selected));});
  const era=eras[year];
  document.querySelectorAll(".era-card").forEach(button=>{const active=button.dataset.year===year;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});
