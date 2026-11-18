@@ -59,16 +59,18 @@ if [[ -s "$SLACKWARE_QCOW" && -s "$FLOPPY_1993" ]]; then
 else
  echo "1993 guest assets missing. Run scripts/prepare-linux-1993.sh first; 1993 browser boot will not be available." >&2
 fi
-REDHAT_QCOW="$ROOT/.work/linux-1998/redhat-5.2.qcow2"
+REDHAT_QCOW="$ROOT/.work/linux-1998/redhat-5.2-small.qcow2"
 rm -f "$OUT"/images/redhat-5.2-1998.raw.gz.part-*
 if [[ -s "$REDHAT_QCOW" ]]; then
+ REDHAT_BYTES="$(qemu-img info --output=json "$REDHAT_QCOW" | python3 -c 'import json,sys; print(json.load(sys.stdin)["virtual-size"])')"
+ if (( REDHAT_BYTES >= 2147483648 )); then echo "ERROR: Red Hat virtual disk must be smaller than 2 GiB for browser Blob compatibility" >&2; exit 1; fi
  RAW_1998="$ROOT/.work/linux-1998/redhat-1998.tmp.raw"
  qemu-img convert -f qcow2 -O raw -S 4k "$REDHAT_QCOW" "$RAW_1998"
  gzip -n -9 -c "$RAW_1998" | split -b 20m -d -a 3 - "$OUT/images/redhat-5.2-1998.raw.gz.part-"
  rm -f "$RAW_1998"
  echo "1998 disk split into $(find "$OUT/images" -maxdepth 1 -name 'redhat-5.2-1998.raw.gz.part-*' | wc -l) parts"
 else
- echo "1998 guest not yet installed; skipping Red Hat image." >&2
+ echo "1998 compact guest not found at $REDHAT_QCOW; skipping Red Hat image." >&2
 fi
 (
  cd "$OUT"
