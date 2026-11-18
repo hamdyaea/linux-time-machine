@@ -16,7 +16,7 @@
  const report=message=>{status.textContent=message;};
  const releaseDisk=()=>{if(diskUrl){URL.revokeObjectURL(diskUrl);diskUrl=null;}};
  const clearBootTimer=()=>{if(bootTimer!==null){clearTimeout(bootTimer);bootTimer=null;}};
- function shutdown(){runId++;clearBootTimer();if(vm){try{vm.stop();vm.destroy();}catch(e){console.warn(e);}vm=null;}releaseDisk();starting=false;activeYear=null;start.disabled=false;stop.disabled=true;}
+ function shutdown(){runId++;clearBootTimer();if(vm){try{vm.stop();}catch(e){console.warn(e);}try{const result=vm.destroy();if(result&&typeof result.catch==="function")result.catch(e=>console.debug("v86 shutdown:",e));}catch(e){console.warn(e);}vm=null;}releaseDisk();starting=false;activeYear=null;start.disabled=false;stop.disabled=true;}
  async function verify(path){
   const response=await fetch(path,{method:"HEAD",cache:"no-store"});
   if(!response.ok)throw Error(path+" returned HTTP "+response.status);
@@ -49,10 +49,7 @@
    compressed=response.body;
   }
   report("Decompressing "+year+" IDE disk in browser memory...");
-  const buffer=await new Response(compressed.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
-  if(config.size&&buffer.byteLength!==config.size&&buffer.byteLength!==40000000)throw Error("Unexpected disk image size: "+buffer.byteLength);
-  if(buffer.byteLength<1024*1024||buffer.byteLength%512!==0)throw Error("Invalid IDE disk size: "+buffer.byteLength);
-  return buffer;
+  // 2004 uses a Blob-backed disk: avoid materializing a ~1 GiB ArrayBuffer\n  // and then constructing a second Blob from that huge ArrayBuffer.\n  // The browser may spool the Blob to disk instead of retaining both copies in JS memory.\n  if(year==="2004"){\n   const blob=await new Response(compressed.pipeThrough(new DecompressionStream("gzip"))).blob();\n   if(blob.size<1024*1024||blob.size%512!==0)throw Error("Invalid IDE disk size: "+blob.size);\n   return blob;\n  }\n  const buffer=await new Response(compressed.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();\n  if(config.size&&buffer.byteLength!==config.size&&buffer.byteLength!==40000000)throw Error("Unexpected disk image size: "+buffer.byteLength);\n  if(buffer.byteLength<1024*1024||buffer.byteLength%512!==0)throw Error("Invalid IDE disk size: "+buffer.byteLength);\n  return buffer;
  }
  async function boot(){
   if(starting||vm)return;
@@ -68,7 +65,7 @@
    const disk=await loadDisk(config,year);
    if(token!==runId)return;
    releaseDisk();
-   diskUrl=URL.createObjectURL(new Blob([disk],{type:"application/octet-stream"}));
+   diskUrl=URL.createObjectURL(disk instanceof Blob?disk:new Blob([disk],{type:"application/octet-stream"}));
    report("Starting authentic Linux "+year+" x86 PC...");
    const Emulator=window.V86Starter||window.V86;
    const options={
