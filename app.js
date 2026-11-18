@@ -92,20 +92,12 @@ async function checkRealKernelAssets(){
  updateKernelPanel();
 }
 function updateKernelPanel(){
- const panel=$("#kernel-boot-panel"),detail=$("#kernel-boot-detail"),link=$("#kernel-boot-link"),title=$("#kernel-boot-title");
+ const panel=$("#kernel-boot-panel"),detail=$("#kernel-boot-detail"),title=$("#kernel-boot-title");
  if(!panel)return;
- panel.hidden=!realKernelEras.has(year);
+ panel.hidden=year!=="1993";
  if(panel.hidden)return;
- if(year==="1991"){
-  title.textContent="LINUX 0.01 / REAL x86 BOOT";
-  detail.textContent=realKernelAvailable?"Boot the compatibility-patched Linux 0.01 kernel in the browser's x86 emulator.":"Linux 0.01 boots in QEMU. Browser boot files are not yet deployed; the terminal below is an interactive historical shell.";
-  link.hidden=!realKernelAvailable;
-  link.href="/vm.html?era=1991";
- }else{
-  title.textContent="1993 / HISTORICAL KERNEL";
-  detail.textContent="A verified 1993 kernel and matching distribution disk have not yet been prepared. The terminal below is an interactive historical shell.";
-  link.hidden=true;
- }
+ title.textContent="1993 / HISTORICAL KERNEL";
+ detail.textContent="A verified 1993 kernel and matching distribution disk have not yet been prepared. The terminal below is an interactive historical shell.";
 }
 function setEra(next){
  if(!Object.hasOwn(eras,next))return;
