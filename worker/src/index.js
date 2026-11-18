@@ -6,7 +6,7 @@ const DAY_LIMIT = 30_000; // Below the typical Workers Free daily request allowa
 const headers = (origin, env) => ({
   "Access-Control-Allow-Origin": env.SITE_ORIGIN,
   "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
-  "Access-Control-Allow-Headers": "Range",
+  "Access-Control-Allow-Headers": "Range, X-Accept-Encoding",
   "Access-Control-Expose-Headers": "Accept-Ranges, Content-Range, Content-Length",
   "Vary": "Origin",
   "Cache-Control": "no-store",
