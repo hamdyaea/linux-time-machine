@@ -7,6 +7,10 @@ SRC="$ROOT/.work/linux-1993/linux-evocation"
 FLOPPY="$ROOT/.work/linux-1993/linux-0.99.12-floppy.img"
 [[ -s "$SRC/.config" && -s "$SRC/zImage" && -s "$FLOPPY" ]] || { echo "Missing existing 1993 build; run prepare-linux-1993.sh first" >&2; exit 1; }
 command -v docker >/dev/null || { echo "Docker is required" >&2; exit 1; }
+if [[ ! -w "$SRC/.config" || ! -w "$SRC" ]]; then
+ echo "Fixing ownership of Docker-generated kernel build files..." >&2
+ sudo chown -R "$(id -u):$(id -g)" "$SRC"
+fi
 cp -p "$SRC/.config" "$SRC/.config.before-v86-netfix"
 cp -p "$FLOPPY" "$FLOPPY.before-v86-netfix"
 python3 - "$SRC/.config" <<'PY'
@@ -26,7 +30,7 @@ for key in keys:
 p.write_text(s)
 print("Disabled legacy network drivers:",", ".join(keys))
 PY
-docker run --rm --platform linux/amd64 -v "$SRC:/src" -w /src ubuntu:20.04 bash -euc '
+docker run --rm --platform linux/amd64 --user "$(id -u):$(id -g)" -v "$SRC:/src" -w /src ubuntu:20.04 bash -euc '
  export DEBIAN_FRONTEND=noninteractive
  apt-get update -qq
  apt-get install -y -qq --no-install-recommends build-essential bin86 bc libc6-dev-i386 gcc-multilib make binutils >/dev/null
