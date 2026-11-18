@@ -6,8 +6,9 @@ id demo >/dev/null 2>&1 || { echo "Missing user demo" >&2; exit 1; }
 command -v startx >/dev/null 2>&1 || { echo "Install xinit first" >&2; exit 1; }
 command -v openbox-session >/dev/null 2>&1 || { echo "Install openbox first" >&2; exit 1; }
 apk add util-linux-login
+command -v agetty >/dev/null 2>&1 || { echo 'agetty unavailable; do not change inittab' >&2; exit 1; }
 # BusyBox init uses /etc/inittab. Replace tty1 getty with local autologin.
-cp -n /etc/inittab /etc/inittab.before-2004-autologin
+[ -e /etc/inittab.before-2004-autologin ] || cp /etc/inittab /etc/inittab.before-2004-autologin
 if grep -q '^tty1::respawn:' /etc/inittab; then
   sed -i 's|^tty1::respawn:.*|tty1::respawn:/sbin/agetty --autologin demo --noclear tty1 linux|' /etc/inittab
 else
@@ -30,4 +31,4 @@ EOF
 chown demo:demo /home/demo/.profile
 chmod 644 /home/demo/.profile
 echo "Configured local tty1 autologin. Reboot to test."
-echo "Rollback: cp /etc/inittab.before-2004-autologin /etc/inittab; rm /home/demo/.profile; reboot"
+echo "Rollback: cp /etc/inittab.before-2004-autologin /etc/inittab; edit /home/demo/.profile to remove the startx block; reboot"
