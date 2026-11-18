@@ -8,7 +8,7 @@
   "1991":{floppy:"/images/linux-0.01-floppy-1440k.img",disk:"/images/linux-0.01-hda.img.gz",master:"/images/linux-0.01-ide-master-placeholder.img",size:40*1024*1024,memory:8*1024*1024},
   "1993":{floppy:"/images/linux-0.99.12-floppy.img",diskPartsPrefix:"/images/slackware-1.01-1993.raw.gz.part-",memory:16*1024*1024},
   "1998":{diskPartsPrefix:"/images/redhat-5.2-1998.raw.gz.part-",memory:64*1024*1024},
-  "2004":{diskPartsPrefix:"/images/ubuntu-4.10-2004.raw.gz.part-",memory:128*1024*1024}
+  "2004":{remoteDisk:"https://linux-time-machine-disk.hamdy-aea.workers.dev/disk",size:1073741824,memory:128*1024*1024}
  };
  const home=document.getElementById("real-linux-home");
  const selected=()=>{if(home)return home.dataset.guestYear||"1991";const era=new URLSearchParams(location.search).get("era");return ["1991","1993","1998","2004"].includes(era)?era:"1991";};
@@ -71,17 +71,25 @@
    report("Checking Linux "+year+" boot assets...");
    await Promise.all([...Object.values(common),...Object.entries(config).filter(([key,v])=>typeof v==="string"&&key!=="diskPartsPrefix").map(([,v])=>v),...(config.diskPartsPrefix?[config.diskPartsPrefix+"000"]:[])].map(verify));
    if(token!==runId)return;
-   const disk=await loadDisk(config,year);
+   if(config.remoteDisk){
+    report("Checking remote Ubuntu 2004 disk availability...");
+    const probe=await fetch(config.remoteDisk,{method:"HEAD",cache:"no-store"});
+    if(!probe.ok)throw Error("Remote disk unavailable: HTTP "+probe.status);
+    if(Number(probe.headers.get("content-length"))!==config.size)throw Error("Unexpected remote disk size");
+   }else{
+    const disk=await loadDisk(config,year);
+    if(token!==runId)return;
+    releaseDisk();
+    diskUrl=URL.createObjectURL(disk instanceof Blob?disk:new Blob([disk],{type:"application/octet-stream"}));
+   }
    if(token!==runId)return;
-   releaseDisk();
-   diskUrl=URL.createObjectURL(disk instanceof Blob?disk:new Blob([disk],{type:"application/octet-stream"}));
    report("Starting authentic Linux "+year+" x86 PC...");
    const Emulator=window.V86Starter||window.V86;
    const options={
     wasm_path:common.wasm,memory_size:config.memory,vga_memory_size:2*1024*1024,
     screen_container:document.getElementById("screen_container"),
     bios:{url:common.bios},vga_bios:{url:common.vga},
-    hda:{url:year==="1991"?config.master:diskUrl},
+    hda:config.remoteDisk?{url:config.remoteDisk,size:config.size,async:true}:{url:year==="1991"?config.master:diskUrl},
     boot_order:year==="1998"||year==="2004"?0x132:0x213,autostart:true
    };
    if(config.floppy)options.fda={url:config.floppy};
