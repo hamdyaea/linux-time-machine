@@ -20,7 +20,9 @@ docker run --rm --platform linux/amd64 -v "$SRC:/src" -w /src ubuntu:20.04 bash 
  apt-get update -qq
  apt-get install -y -qq --no-install-recommends build-essential bin86 bc libc6-dev-i386 gcc-multilib make binutils >/dev/null
  if [[ ! -f .config ]]; then
-   echo "No kernel .config found. Run make config interactively in the container before building." >&2
+   echo "No kernel .config found. Configure it first with:" >&2
+   echo "docker run --rm -it --platform linux/amd64 -v \"$SRC:/src\" -w /src ubuntu:20.04 bash" >&2
+   echo "Inside container install build-essential bin86 bc libc6-dev-i386 gcc-multilib, then run make config." >&2
    exit 3
  fi
  make dep
@@ -41,7 +43,7 @@ FLOPPY="$WORK/linux-0.99.12-floppy.img"
 truncate -s 1474560 "$FLOPPY"
 dd if="$SRC/zImage" of="$FLOPPY" conv=notrunc status=none
 # Linux 0.99 boot protocol: bytes 508-509 encode /dev/hda1 (major 3, minor 1).
-printf '\\x01\\x03' | dd of="$FLOPPY" bs=1 seek=508 conv=notrunc status=none
+printf '%b' '\x5cx01\x5cx03' | dd of="$FLOPPY" bs=1 seek=508 conv=notrunc status=none
 echo "Ready for local QEMU validation (NOT yet browser-tested):"
 echo "  qemu-system-i386 -machine pc -m 16 -cpu pentium2 -nic none -drive if=floppy,format=raw,file='$FLOPPY' -drive if=ide,index=0,format=qcow2,file='$DISK',snapshot=on -boot order=a"
 echo "Only after QEMU succeeds: convert the qcow2 to raw, compress and test v86."
