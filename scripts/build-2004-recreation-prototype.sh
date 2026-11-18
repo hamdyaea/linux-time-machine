@@ -2,6 +2,10 @@
 # Experimental Tiny Core 15.0 Ubuntu-2004-style desktop ISO.
 # Not authentic Ubuntu 4.10. Keeps original ISO and public site unchanged.
 set -Eeuo pipefail
+# Repacking a Linux initramfs requires root to preserve /dev device nodes.
+if [[ "$EUID" -ne 0 ]]; then
+  exec sudo -- bash "$0" "$@"
+fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK="$ROOT/.work/linux-2004-recreation"
 ISO="$WORK/TinyCore-15.0.iso"
@@ -11,7 +15,7 @@ for cmd in xorriso gzip cpio find qemu-system-i386; do
   command -v "$cmd" >/dev/null || { echo "Missing command: $cmd" >&2; exit 1; }
 done
 TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
+trap 'rm -rf -- "$TMP"' EXIT
 mkdir -p "$TMP/iso" "$TMP/root"
 xorriso -osirrox on -indev "$ISO" -extract / "$TMP/iso" >/dev/null 2>&1
 [[ -f "$TMP/iso/boot/core.gz" ]] || { echo "Missing boot/core.gz" >&2; exit 1; }
@@ -43,6 +47,7 @@ xorriso -as mkisofs -quiet -R -J \
   -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat \
   -no-emul-boot -boot-load-size 4 -boot-info-table \
   -o "$DEST" "$TMP/iso"
+chown "$(stat -c %u "$ISO")":"$(stat -c %g "$ISO")" "$DEST"
 echo "Built: $DEST"
 du -h "$ISO" "$DEST"
 echo "Testing custom image in QEMU (128 MiB)."
