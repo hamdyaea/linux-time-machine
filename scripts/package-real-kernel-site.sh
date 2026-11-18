@@ -59,9 +59,21 @@ if [[ -s "$SLACKWARE_QCOW" && -s "$FLOPPY_1993" ]]; then
 else
  echo "1993 guest assets missing. Run scripts/prepare-linux-1993.sh first; 1993 browser boot will not be available." >&2
 fi
+REDHAT_QCOW="$ROOT/.work/linux-1998/redhat-5.2.qcow2"
+rm -f "$OUT"/images/redhat-5.2-1998.raw.gz.part-*
+if [[ -s "$REDHAT_QCOW" ]]; then
+ RAW_1998="$ROOT/.work/linux-1998/redhat-1998.tmp.raw"
+ qemu-img convert -f qcow2 -O raw -S 4k "$REDHAT_QCOW" "$RAW_1998"
+ gzip -n -9 -c "$RAW_1998" | split -b 20m -d -a 3 - "$OUT/images/redhat-5.2-1998.raw.gz.part-"
+ rm -f "$RAW_1998"
+ echo "1998 disk split into $(find "$OUT/images" -maxdepth 1 -name 'redhat-5.2-1998.raw.gz.part-*' | wc -l) parts"
+else
+ echo "1998 guest not yet installed; skipping Red Hat image." >&2
+fi
 (
  cd "$OUT"
  sha256sum images/linux-0.01-floppy-1440k.img images/linux-0.01-ide-master-placeholder.img images/linux-0.01-hda.img.gz vendor/v86/{libv86.js,v86.wasm,seabios.bin,vgabios.bin} > SHA256SUMS
+ if [[ -s images/redhat-5.2-1998.raw.gz.part-000 ]]; then sha256sum images/redhat-5.2-1998.raw.gz.part-* >> SHA256SUMS; fi
  if [[ -s images/slackware-1.01-1993.raw.gz.part-000 ]]; then sha256sum images/linux-0.99.12-floppy.img images/slackware-1.01-1993.raw.gz.part-* >> SHA256SUMS; fi
 )
 if find "$OUT" -type f -size +25M -print | grep -q .; then
