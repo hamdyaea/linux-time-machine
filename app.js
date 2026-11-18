@@ -105,6 +105,10 @@ function setEra(next){
  const realHome=$("#real-linux-home"),historicalShell=$("#console-shell");
  if(realHome){realHome.hidden=year!=="1991"&&year!=="1993";realHome.dataset.guestYear=year;}
  if(historicalShell)historicalShell.hidden=year==="1991"||year==="1993";
+ const facts1991=$("#linux001-facts"),facts1993=$("#linux1993-facts"),guestTitle=$("#real-linux-guest-title");
+ if(facts1991)facts1991.hidden=year!=="1991";
+ if(facts1993)facts1993.hidden=year!=="1993";
+ if(guestTitle)guestTitle.textContent=year==="1993"?"◉ LINUX 0.99.12 / SLACKWARE 1.01 · 16 MiB · IDE":"◉ LINUX 0.01 / REAL x86 · 8 MiB · IDE";
  window.dispatchEvent(new CustomEvent("linux-time-machine-era-change",{detail:{year}}));
  document.querySelectorAll("[data-jump]").forEach(button=>{const selected=button.dataset.jump===year;button.classList.toggle("selected",selected);button.setAttribute("aria-pressed",String(selected));});
  const era=eras[year];
