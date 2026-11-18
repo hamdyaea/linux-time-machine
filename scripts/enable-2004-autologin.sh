@@ -11,7 +11,8 @@ command -v openbox-session >/dev/null 2>&1 || { echo 'Missing openbox-session' >
 # /bin/login -f demo requires root and does not request a password.
 LOGIN_BIN=/bin/login
 [ -x "$LOGIN_BIN" ] || LOGIN_BIN=/usr/bin/login
-cp /etc/inittab /etc/inittab.before-2004-autologin
+[ -e /etc/inittab.before-2004-autologin ] || cp /etc/inittab /etc/inittab.before-2004-autologin
+mkdir -p /usr/local/sbin
 cat >/usr/local/sbin/era2004-autologin <<EOF
 #!/bin/sh
 exec "$LOGIN_BIN" -f demo
