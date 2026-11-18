@@ -181,3 +181,13 @@
 .real-linux-screen>div{white-space:pre}
 .real-linux-status{margin:8px 4px;color:#8ecaa7;font:12px/1.5 monospace;white-space:pre-wrap}
 @media(max-width:650px){.real-linux-screen{min-height:360px;height:430px}.real-linux-toolbar{font-size:10px}}
+
+/* Concise, source-backed historical context for the real 1991 guest. */
+.linux001-facts{margin:13px 2px 3px;padding:13px 16px;border-top:1px solid #285d42;background:#0a1716;color:#b8cfc6;font:13px/1.65 system-ui,sans-serif}
+.linux001-facts h3{margin:0 0 7px;color:#a4f3c3;font:700 14px/1.4 monospace;letter-spacing:.045em}
+.linux001-facts h3 span{font-size:11px;color:#80ac9b}
+.linux001-facts p{margin:6px 0}
+.linux001-facts strong{color:#d7f6e4}
+.linux001-facts code{color:#9deac1}
+.linux001-facts-source{font-size:11px;color:#89a89b}
+.linux001-facts-source a{color:#8ce2b8;text-decoration:underline;text-underline-offset:2px}
