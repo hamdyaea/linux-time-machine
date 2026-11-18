@@ -78,7 +78,7 @@ function showBanner(){
  const add=()=>{if(token!==bootToken)return;if(i>=lines.length){return;}element.textContent+=lines[i++]+"\n";terminal.scrollTop=terminal.scrollHeight;window.setTimeout(add,85);};
  add();
 }
-const realKernelEras=new Set(["1991","1993"]);
+const realKernelEras=new Set(["1991","1993","1998"]);
 let realKernelAvailable=false;
 async function checkRealKernelAssets(){
  const paths=["/vendor/v86/libv86.js","/vendor/v86/v86.wasm","/vendor/v86/seabios.bin","/vendor/v86/vgabios.bin","/images/linux-0.01-floppy.img","/images/linux-0.01-hda.img.gz"];
@@ -126,13 +126,13 @@ function setEra(next){
  if(!Object.hasOwn(eras,next))return;
  year=next;reset();updateKernelPanel();updateTemporalEngine();
  const realHome=$("#real-linux-home"),historicalShell=$("#console-shell");
- if(realHome){realHome.hidden=year!=="1991"&&year!=="1993";realHome.dataset.guestYear=year;}
+ if(realHome){realHome.hidden=year!=="1991"&&year!=="1993"&&year!=="1998";realHome.dataset.guestYear=year;}
  if(historicalShell)historicalShell.hidden=year==="1991"||year==="1993";
  const facts1991=$("#linux001-facts"),facts1993=$("#linux1993-facts"),guestTitle=$("#real-linux-guest-title"),guestHint=$("#real-linux-hint");
  if(facts1991)facts1991.hidden=year!=="1991";
  if(facts1993)facts1993.hidden=year!=="1993";
- if(guestTitle)guestTitle.textContent=year==="1993"?"◉ LINUX 0.99.12 / SLACKWARE 1.01 · 16 MiB · IDE · LOGIN: root":"◉ LINUX 0.01 / REAL x86 · 8 MiB · IDE";
- if(guestHint)guestHint.textContent=year==="1993"?"REAL LINUX 0.99.12 · Slackware 1.01 · Click inside the guest screen to type · At the login prompt, enter root · Commands run inside the historical x86 system.":"REAL LINUX 0.01 · Click inside the guest screen to type · Commands run inside the historical x86 system.";
+ if(guestTitle)guestTitle.textContent=year==="1998"?"◉ RED HAT LINUX 5.2 · 64 MiB · IDE · LOGIN: root":year==="1993"?"◉ LINUX 0.99.12 / SLACKWARE 1.01 · 16 MiB · IDE · LOGIN: root":"◉ LINUX 0.01 / REAL x86 · 8 MiB · IDE";
+ if(guestHint)guestHint.textContent=year==="1998"?"REAL RED HAT LINUX 5.2 · Click inside the guest screen to type · Log in with the credentials chosen during installation.":year==="1993"?"REAL LINUX 0.99.12 · Slackware 1.01 · Click inside the guest screen to type · At the login prompt, enter root · Commands run inside the historical x86 system.":"REAL LINUX 0.01 · Click inside the guest screen to type · Commands run inside the historical x86 system.";
  window.dispatchEvent(new CustomEvent("linux-time-machine-era-change",{detail:{year}}));
  document.querySelectorAll("[data-jump]").forEach(button=>{const selected=button.dataset.jump===year;button.classList.toggle("selected",selected);button.setAttribute("aria-pressed",String(selected));});
  const era=eras[year];
