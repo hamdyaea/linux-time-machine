@@ -15,15 +15,13 @@ if [[ ! -d "$SRC/.git" ]]; then
   git clone --depth=1 https://github.com/freewilll/linux-evocation.git "$SRC"
 fi
 echo "Building the 1993 kernel with a reproducible 32-bit Ubuntu toolchain..."
-docker run --rm --platform linux/amd64 -v "$SRC:/src" -w /src ubuntu:20.04 bash -euc '
+docker run --rm -it --platform linux/amd64 -v "$SRC:/src" -w /src ubuntu:20.04 bash -euc '
  export DEBIAN_FRONTEND=noninteractive
  apt-get update -qq
  apt-get install -y -qq --no-install-recommends build-essential bin86 bc libc6-dev-i386 gcc-multilib make binutils >/dev/null
  if [[ ! -f .config ]]; then
-   echo "No kernel .config found. Configure it first with:" >&2
-   echo "docker run --rm -it --platform linux/amd64 -v \"$SRC:/src\" -w /src ubuntu:20.04 bash" >&2
-   echo "Inside container install build-essential bin86 bc libc6-dev-i386 gcc-multilib, then run make config." >&2
-   exit 3
+   echo "Configuring Linux 0.99.12: answer the original kernel options."
+   make config
  fi
  make dep
  make -j2
