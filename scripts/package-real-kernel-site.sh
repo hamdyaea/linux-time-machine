@@ -37,9 +37,24 @@ cp -a "$ROOT/assets/." "$OUT/assets/"
 cp "$ROOT/images/linux-0.01-floppy-1440k.img" "$ROOT/images/linux-0.01-hda.img.gz" "$OUT/images/"
 cp "$ROOT/vendor/v86/"{libv86.js,v86.wasm,seabios.bin,vgabios.bin} "$OUT/vendor/v86/"
 cp "$ROOT/guests.json" "$OUT/guests.json"
+# Optional authentic 1993 guest. Do not break 1991-only builds when not prepared.
+SLACKWARE_QCOW="$ROOT/.work/linux-1993/extracted/qemu-xmas-slackware/slackware.qcow2"
+FLOPPY_1993="$ROOT/.work/linux-1993/linux-0.99.12-floppy.img"
+rm -f "$OUT/images/linux-0.99.12-floppy.img" "$OUT/images/slackware-1.01-1993.raw.gz"
+if [[ -s "$SLACKWARE_QCOW" && -s "$FLOPPY_1993" ]]; then
+ command -v qemu-img >/dev/null || { echo "qemu-img required for 1993 guest" >&2; exit 1; }
+ cp "$FLOPPY_1993" "$OUT/images/linux-0.99.12-floppy.img"
+ # Avoid keeping a large raw image on disk: qemu-img streams into gzip.
+ qemu-img convert -f qcow2 -O raw "$SLACKWARE_QCOW" /dev/stdout | gzip -n -9 > "$OUT/images/slackware-1.01-1993.raw.gz"
+ if [[ ! -s "$OUT/images/slackware-1.01-1993.raw.gz" ]]; then echo "1993 disk compression failed" >&2; exit 1; fi
+ echo "1993 compressed disk: $(du -h "$OUT/images/slackware-1.01-1993.raw.gz")"
+else
+ echo "1993 guest assets missing. Run scripts/prepare-linux-1993.sh first; 1993 browser boot will not be available." >&2
+fi
 (
  cd "$OUT"
  sha256sum images/linux-0.01-floppy-1440k.img images/linux-0.01-ide-master-placeholder.img images/linux-0.01-hda.img.gz vendor/v86/{libv86.js,v86.wasm,seabios.bin,vgabios.bin} > SHA256SUMS
+ if [[ -s images/slackware-1.01-1993.raw.gz ]]; then sha256sum images/linux-0.99.12-floppy.img images/slackware-1.01-1993.raw.gz >> SHA256SUMS; fi
 )
 if find "$OUT" -type f -size +25M -print | grep -q .; then
  echo "ERROR: Bundle contains a file larger than 25 MiB:" >&2
