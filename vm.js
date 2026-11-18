@@ -1,87 +1,95 @@
-/* Authentic Linux 0.01-compatible guest; screen output is produced by v86. */
+/* Authentic Linux 0.01 (1991) and Linux 0.99.12 (1993) x86 guests. */
 (() => {
  "use strict";
  const start=document.getElementById("start"),stop=document.getElementById("stop"),status=document.getElementById("status");
- const paths={
-  wasm:"/vendor/v86/v86.wasm",
-  bios:"/vendor/v86/seabios.bin",
-  vga:"/vendor/v86/vgabios.bin",
-  floppy:"/images/linux-0.01-floppy-1440k.img",
-  disk:"/images/linux-0.01-hda.img.gz",
-  master:"/images/linux-0.01-ide-master-placeholder.img"
+ if(!start||!stop||!status)return;
+ const common={wasm:"/vendor/v86/v86.wasm",bios:"/vendor/v86/seabios.bin",vga:"/vendor/v86/vgabios.bin"};
+ const guests={
+  "1991":{floppy:"/images/linux-0.01-floppy-1440k.img",disk:"/images/linux-0.01-hda.img.gz",master:"/images/linux-0.01-ide-master-placeholder.img",size:40*1024*1024,memory:8*1024*1024},
+  "1993":{floppy:"/images/linux-0.99.12-floppy.img",disk:"/images/slackware-1.01-1993.raw.gz",memory:16*1024*1024}
  };
- let vm=null,starting=false,bootTimer=null,diskUrl=null;
+ const home=document.getElementById("real-linux-home");
+ const selected=()=>home?(home.dataset.guestYear||"1991"):(new URLSearchParams(location.search).get("era")==="1993"?"1993":"1991");
+ let vm=null,starting=false,bootTimer=null,diskUrl=null,runId=0,activeYear=null;
+ const report=message=>{status.textContent=message;};
  const releaseDisk=()=>{if(diskUrl){URL.revokeObjectURL(diskUrl);diskUrl=null;}};
  const clearBootTimer=()=>{if(bootTimer!==null){clearTimeout(bootTimer);bootTimer=null;}};
- const report=message=>{status.textContent=message;};
+ function shutdown(){runId++;clearBootTimer();if(vm){try{vm.stop();vm.destroy();}catch(e){console.warn(e);}vm=null;}releaseDisk();starting=false;activeYear=null;start.disabled=false;stop.disabled=true;}
  async function verify(path){
   const response=await fetch(path,{method:"HEAD",cache:"no-store"});
   if(!response.ok)throw Error(path+" returned HTTP "+response.status);
-  if((response.headers.get("content-type")||"").includes("text/html"))throw Error(path+" returned HTML, not an emulator asset");
+  if((response.headers.get("content-type")||"").includes("text/html"))throw Error(path+" returned HTML instead of an emulator asset");
  }
- async function loadDisk(){
-  if(typeof DecompressionStream!=="function")throw Error("This browser does not support DecompressionStream('gzip'). Try an updated Chromium or Firefox.");
-  report("Downloading compressed historical disk (4.4 MB)...");
-  const response=await fetch(paths.disk,{cache:"no-store"});
+ async function loadDisk(config,year){
+  if(typeof DecompressionStream!=="function")throw Error("Browser lacks gzip DecompressionStream");
+  report("Downloading "+year+" historical disk...");
+  const response=await fetch(config.disk,{cache:"no-store"});
   if(!response.ok||!response.body)throw Error("Disk download failed: HTTP "+response.status);
   if((response.headers.get("content-type")||"").includes("text/html"))throw Error("Disk URL returned HTML");
-  report("Decompressing Linux 0.01 IDE disk in browser memory...");
-  const decompressed=response.body.pipeThrough(new DecompressionStream("gzip"));
-  const buffer=await new Response(decompressed).arrayBuffer();
-  if(buffer.byteLength!==40*1024*1024 && buffer.byteLength!==40_000_000)
-   throw Error("Unexpected disk image size: "+buffer.byteLength+" bytes");
+  report("Decompressing "+year+" IDE disk in browser memory...");
+  const buffer=await new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
+  if(config.size&&buffer.byteLength!==config.size&&buffer.byteLength!==40000000)throw Error("Unexpected disk image size: "+buffer.byteLength);
+  if(buffer.byteLength<1024*1024||buffer.byteLength%512!==0)throw Error("Invalid IDE disk size: "+buffer.byteLength);
   return buffer;
  }
- start.addEventListener("click",async()=>{
+ async function boot(){
   if(starting||vm)return;
-  starting=true;start.disabled=true;
+  const year=selected(),config=guests[year];
+  if(!config)return;
+  const token=++runId;
+  starting=true;start.disabled=true;activeYear=year;
   try{
-   if(typeof window.V86Starter!=="function" && typeof window.V86!=="function"){
-    const url="/vendor/v86/libv86.js";
-    const response=await fetch(url,{cache:"no-store"});
-    const type=response.headers.get("content-type")||"unknown";
-    if(!response.ok)throw Error("v86 JavaScript HTTP "+response.status+" at "+url);
-    if(type.includes("text/html"))throw Error("v86 JavaScript URL returned HTML instead of JS: "+url);
-    const issues=(window.__v86LoadErrors||[]).slice(-4).join(" | ");
-    throw Error("v86 JavaScript fetched (HTTP "+response.status+", "+type+") but neither V86Starter nor V86 is available."+(issues?" Browser errors: "+issues:" Check F12 Console and Network response for script content."));
-   }
-   report("Checking v86 emulator and Linux 0.01 boot assets...");
-   await Promise.all(Object.values(paths).map(verify));
-   const disk=await loadDisk();
+   if(typeof window.V86Starter!=="function"&&typeof window.V86!=="function")throw Error("v86 JavaScript is not loaded");
+   report("Checking Linux "+year+" boot assets...");
+   await Promise.all([...Object.values(common),...Object.values(config).filter(v=>typeof v==="string")].map(verify));
+   if(token!==runId)return;
+   const disk=await loadDisk(config,year);
+   if(token!==runId)return;
    releaseDisk();
    diskUrl=URL.createObjectURL(new Blob([disk],{type:"application/octet-stream"}));
-   report("Starting authentic x86 guest (8 MiB RAM, floppy boot, IDE master placeholder + historical slave disk)...");
+   report("Starting authentic Linux "+year+" x86 PC...");
    const Emulator=window.V86Starter||window.V86;
-   const constructorName=typeof window.V86Starter==="function"?"V86Starter":"V86";
-   vm=new Emulator({
-    wasm_path:paths.wasm,memory_size:8*1024*1024,vga_memory_size:2*1024*1024,
+   const options={
+    wasm_path:common.wasm,memory_size:config.memory,vga_memory_size:2*1024*1024,
     screen_container:document.getElementById("screen_container"),
-    bios:{url:paths.bios},vga_bios:{url:paths.vga},
-    fda:{url:paths.floppy},hda:{url:paths.master},hdb:{url:diskUrl},boot_order:0x213,autostart:true
-   });
+    bios:{url:common.bios},vga_bios:{url:common.vga},
+    fda:{url:config.floppy},hda:{url:year==="1991"?config.master:diskUrl},
+    boot_order:0x213,autostart:true
+   };
+   if(year==="1991")options.hdb={url:diskUrl};
+   vm=new Emulator(options);
    bootTimer=setTimeout(()=>{
+    if(token!==runId)return;
     bootTimer=null;
     const errors=(window.__v86LoadErrors||[]).slice(-3).join(" | ");
-    report("Emulator did not become ready within 20 seconds. Constructor: "+constructorName+". State: "+(vm&&typeof vm.is_running==="function"?String(vm.is_running()):"unknown")+". "+(errors?"Errors: "+errors:"Check browser Console for v86 initialization failures."));
-    start.disabled=false;
+    report("Linux "+year+" emulator startup timed out. "+(errors?"Errors: "+errors:"Inspect the browser console."));
     stop.disabled=false;
-   },20000);
-   vm.add_listener("emulator-ready",()=>{clearBootTimer();report("x86 emulator running. Click the guest screen and use your keyboard.");stop.disabled=false;});
-   vm.add_listener("emulator-stopped",()=>{clearBootTimer();report("PC powered off.");start.disabled=false;stop.disabled=true;vm=null;releaseDisk();});
+   },30000);
+   vm.add_listener("emulator-ready",()=>{
+    if(token!==runId)return;
+    clearBootTimer();report("Linux "+year+" x86 emulator running. Click the screen to type.");stop.disabled=false;
+   });
+   vm.add_listener("emulator-stopped",()=>{
+    if(token!==runId)return;
+    shutdown();report("PC powered off.");
+   });
   }catch(error){
-   clearBootTimer();
-   report("Unable to start: "+error.message);start.disabled=false;
-   if(vm){try{vm.destroy();}catch{}vm=null;}
-   releaseDisk();
-  }finally{starting=false;}
- });
- if(document.getElementById("real-linux-home") || new URLSearchParams(location.search).get("autostart")==="1") {
-  window.addEventListener("load",()=>start.click(),{once:true});
+   if(token===runId){shutdown();report("Unable to boot Linux "+year+": "+error.message);}
+  }finally{if(token===runId)starting=false;}
  }
- stop.addEventListener("click",()=>{
-  clearBootTimer();
-  if(vm){try{vm.stop();vm.destroy();}catch{}vm=null;}
-  releaseDisk();
-  stop.disabled=true;start.disabled=false;report("PC powered off.");
+ start.addEventListener("click",boot);
+ stop.addEventListener("click",()=>{shutdown();report("PC powered off.");});
+ window.addEventListener("linux-time-machine-era-change",event=>{
+  if(!home)return;
+  const year=event.detail?.year;
+  if(year!=="1991"&&year!=="1993"){shutdown();return;}
+  if(activeYear===year&&(vm||starting))return;
+  shutdown();
+  home.dataset.guestYear=year;
+  report("Preparing Linux "+year+"...");
+  void boot();
  });
+ if(home||new URLSearchParams(location.search).get("autostart")==="1"){
+  window.addEventListener("load",()=>{if(!vm&&!starting)void boot();},{once:true});
+ }
 })();
