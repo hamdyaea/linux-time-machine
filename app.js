@@ -1,4 +1,4 @@
-import { eras } from "./eras.js?v=20261117-eras12";
+import { eras } from "./eras.js?v=20261118-command-guide2";
 
 // Browser-based historical shell interfaces. See README for implementation scope.
 let year="1991",cwd=[],history=[],historyIndex=0,bootToken=0;
