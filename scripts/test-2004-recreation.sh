@@ -5,7 +5,7 @@
 set -Eeuo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT="$ROOT/.work/linux-2004-recreation"
-ISO="$OUT/TinyCore-current.iso"
+ISO="$OUT/TinyCore-15.0.iso"
 mkdir -p "$OUT"
 for cmd in curl md5sum qemu-system-i386; do
   command -v "$cmd" >/dev/null || { echo "Missing command: $cmd" >&2; exit 1; }
@@ -13,7 +13,7 @@ done
 # Use upstream or a public mirror; some networks cannot reach tinycorelinux.net.
 SOURCES=(
   "https://distro.ibiblio.org/tinycorelinux/15.x/x86/release"
-  "http://tinycorelinux.net/15.x/x86/release"
+  "https://mirror.math.princeton.edu/pub/tinycorelinux/15.x/x86/release"
   "https://tinycorelinux.net/15.x/x86/release"
 )
 download_from_mirror() {
@@ -21,12 +21,12 @@ download_from_mirror() {
   echo "Trying Tiny Core mirror: $base"
   rm -f "$OUT/upstream.md5" "$ISO.tmp"
   curl -fLsS --retry 2 --connect-timeout 8 --max-time 180 \
-    "$base/TinyCore-current.iso.md5.txt" -o "$OUT/upstream.md5" || return 1
+    "$base/TinyCore-15.0.iso.md5.txt" -o "$OUT/upstream.md5" || return 1
   expected="$(grep -Eo '[a-fA-F0-9]{32}' "$OUT/upstream.md5" | head -n 1)"
   [[ -n "$expected" ]] || return 1
   if [[ ! -s "$ISO" ]]; then
     curl -fLsS --retry 2 --connect-timeout 8 --max-time 600 \
-      "$base/TinyCore-current.iso" -o "$ISO.tmp" || return 1
+      "$base/TinyCore-15.0.iso" -o "$ISO.tmp" || return 1
     actual="$(md5sum "$ISO.tmp" | awk '{print $1}')"
     [[ "${actual,,}" == "${expected,,}" ]] || {
       echo "Checksum mismatch from $base" >&2
