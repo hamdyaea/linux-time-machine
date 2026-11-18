@@ -4,8 +4,15 @@
 set -Eeuo pipefail
 # Repacking a Linux initramfs requires root to preserve /dev device nodes.
 if [[ "$EUID" -ne 0 ]]; then
-  exec sudo -- bash "$0" "$@"
+  sudo -- bash "$0" --build-only
+  echo "Starting QEMU as the regular user. Close the window with the title-bar X."
+  exec qemu-system-i386 -machine pc -m 128 -vga std -nic none \
+    -cdrom "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/.work/linux-2004-recreation/Ubuntu-2004-recreation-test.iso" -boot d
 fi
+[[ "${1:-}" == "--build-only" ]] || {
+  echo "Run this script as your normal user, not via sudo." >&2
+  exit 1
+}
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK="$ROOT/.work/linux-2004-recreation"
 ISO="$WORK/TinyCore-15.0.iso"
@@ -42,6 +49,13 @@ chown -R 1001:50 "$TMP/root/home/tc/.X.d"
  cd "$TMP/root"
  find . -print0 | cpio --null -o -H newc --quiet | gzip -9 > "$TMP/iso/boot/core.gz"
 )
+# Skip the original Tiny Core blue boot menu and boot immediately.
+# Preserve the existing kernel/initrd boot entries.
+CFG="$TMP/iso/boot/isolinux/isolinux.cfg"
+if [[ -f "$CFG" ]]; then
+  sed -i -E '/^[[:space:]]*(PROMPT|prompt|TIMEOUT|timeout|ONTIMEOUT|ontimeout)[[:space:]]/Id' "$CFG"
+  printf '\\nprompt 0\\ntimeout 0\\n' >> "$CFG"
+fi
 # Bootable BIOS ISO, with the existing isolinux loader.
 xorriso -as mkisofs -quiet -R -J \
   -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat \
@@ -50,5 +64,4 @@ xorriso -as mkisofs -quiet -R -J \
 chown "$(stat -c %u "$ISO")":"$(stat -c %g "$ISO")" "$DEST"
 echo "Built: $DEST"
 du -h "$ISO" "$DEST"
-echo "Testing custom image in QEMU (128 MiB)."
-exec qemu-system-i386 -machine pc -m 128 -vga std -nic none -cdrom "$DEST" -boot d
+echo "ISO construction complete; returning to unprivileged launcher."
