@@ -127,12 +127,12 @@ function setEra(next){
  year=next;reset();updateKernelPanel();updateTemporalEngine();
  const realHome=$("#real-linux-home"),historicalShell=$("#console-shell");
  if(realHome){realHome.hidden=year!=="1991"&&year!=="1993"&&year!=="1998";realHome.dataset.guestYear=year;}
- if(historicalShell)historicalShell.hidden=year==="1991"||year==="1993";
+ if(historicalShell)historicalShell.hidden=realKernelEras.has(year);
  const facts1991=$("#linux001-facts"),facts1993=$("#linux1993-facts"),guestTitle=$("#real-linux-guest-title"),guestHint=$("#real-linux-hint");
  if(facts1991)facts1991.hidden=year!=="1991";
  if(facts1993)facts1993.hidden=year!=="1993";
- if(guestTitle)guestTitle.textContent=year==="1998"?"◉ RED HAT LINUX 5.2 · 64 MiB · IDE · LOGIN: root":year==="1993"?"◉ LINUX 0.99.12 / SLACKWARE 1.01 · 16 MiB · IDE · LOGIN: root":"◉ LINUX 0.01 / REAL x86 · 8 MiB · IDE";
- if(guestHint)guestHint.textContent=year==="1998"?"REAL RED HAT LINUX 5.2 · Click inside the guest screen to type · Log in with the credentials chosen during installation.":year==="1993"?"REAL LINUX 0.99.12 · Slackware 1.01 · Click inside the guest screen to type · At the login prompt, enter root · Commands run inside the historical x86 system.":"REAL LINUX 0.01 · Click inside the guest screen to type · Commands run inside the historical x86 system.";
+ if(guestTitle)guestTitle.textContent=year==="1998"?"◉ RED HAT LINUX 5.2 · 64 MiB · IDE · LOGIN: root / PASSWORD: toor":year==="1993"?"◉ LINUX 0.99.12 / SLACKWARE 1.01 · 16 MiB · IDE · LOGIN: root":"◉ LINUX 0.01 / REAL x86 · 8 MiB · IDE";
+ if(guestHint)guestHint.textContent=year==="1998"?"REAL RED HAT LINUX 5.2 · Username: root · Password: toor · Click inside the guest screen to type.":year==="1993"?"REAL LINUX 0.99.12 · Slackware 1.01 · Click inside the guest screen to type · At the login prompt, enter root · Commands run inside the historical x86 system.":"REAL LINUX 0.01 · Click inside the guest screen to type · Commands run inside the historical x86 system.";
  window.dispatchEvent(new CustomEvent("linux-time-machine-era-change",{detail:{year}}));
  document.querySelectorAll("[data-jump]").forEach(button=>{const selected=button.dataset.jump===year;button.classList.toggle("selected",selected);button.setAttribute("aria-pressed",String(selected));});
  const era=eras[year];
@@ -149,7 +149,7 @@ function setEra(next){
  $("#console-shell").classList.add("is-booting");
  $("#terminal-status").textContent=year==="1991"?"◉ tty0 · 80×25":year==="1993"?"◉ tty1 · 80×25":year==="today"?"◉ pts/0 · UTF-8":"◉ tty1 · 80×25";
  showBanner();
- tips.replaceChildren();era.commands.forEach(([command,description])=>{const button=document.createElement("button");button.type="button";button.className="command-tip";const code=document.createElement("code");code.textContent=command;const detail=document.createElement("span");detail.textContent=description;button.append(code,detail);button.addEventListener("click",()=>{submit(command);input.focus()});tips.append(button);});
+ tips.replaceChildren();const guide=document.querySelector(".command-guide > p");if(guide)guide.textContent=realKernelEras.has(year)?"Click a command to copy it, then paste it inside the real Linux guest terminal. Commands run in the guest, not in a simulated shell.":"Select a command to run it in the terminal above. The commands and files change with each era.";era.commands.forEach(([command,description])=>{const button=document.createElement("button");button.type="button";button.className="command-tip";button.title=realKernelEras.has(year)?"Copy command to clipboard":"Run command";const code=document.createElement("code");code.textContent=command;const detail=document.createElement("span");detail.textContent=description;button.append(code,detail);button.addEventListener("click",async()=>{if(realKernelEras.has(year)){try{await navigator.clipboard.writeText(command);detail.textContent="Copied — paste into Linux guest";setTimeout(()=>{detail.textContent=description},2200);}catch{detail.textContent="Select and copy: "+command;setTimeout(()=>{detail.textContent=description},3000);}return;}submit(command);input.focus()});tips.append(button);});
  facts.replaceChildren();era.facts.forEach(item=>{const li=document.createElement("li");li.textContent=item;facts.append(li);});
  renderDesktop(era);
 }
