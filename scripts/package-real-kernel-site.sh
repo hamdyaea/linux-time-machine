@@ -40,7 +40,7 @@ cp "$ROOT/guests.json" "$OUT/guests.json"
 # Optional authentic 1993 guest. Do not break 1991-only builds when not prepared.
 SLACKWARE_QCOW="$ROOT/.work/linux-1993/extracted/qemu-xmas-slackware/slackware.qcow2"
 FLOPPY_1993="$ROOT/.work/linux-1993/linux-0.99.12-floppy.img"
-rm -f "$OUT/images/linux-0.99.12-floppy.img" "$OUT/images/slackware-1.01-1993.raw.gz"
+rm -f "$OUT/images/linux-0.99.12-floppy.img" "$OUT/images/slackware-1.01-1993.raw.gz" "$OUT"/images/slackware-1.01-1993.raw.gz.part-*
 if [[ -s "$SLACKWARE_QCOW" && -s "$FLOPPY_1993" ]]; then
  command -v qemu-img >/dev/null || { echo "qemu-img required for 1993 guest" >&2; exit 1; }
  cp "$FLOPPY_1993" "$OUT/images/linux-0.99.12-floppy.img"
@@ -51,13 +51,18 @@ if [[ -s "$SLACKWARE_QCOW" && -s "$FLOPPY_1993" ]]; then
  rm -f "$RAW_1993"
  if [[ ! -s "$OUT/images/slackware-1.01-1993.raw.gz" ]]; then echo "1993 disk compression failed" >&2; exit 1; fi
  echo "1993 compressed disk: $(du -h "$OUT/images/slackware-1.01-1993.raw.gz")"
+ # Cloudflare Pages limits each individual asset to 25 MiB.
+ # Split the compressed gzip byte stream; the browser reassembles before decompression.
+ split -b 20m -d -a 3 "$OUT/images/slackware-1.01-1993.raw.gz" "$OUT/images/slackware-1.01-1993.raw.gz.part-"
+ rm -f "$OUT/images/slackware-1.01-1993.raw.gz"
+ echo "1993 disk split into $(find "$OUT/images" -maxdepth 1 -name 'slackware-1.01-1993.raw.gz.part-*' | wc -l) Cloudflare-safe parts"
 else
  echo "1993 guest assets missing. Run scripts/prepare-linux-1993.sh first; 1993 browser boot will not be available." >&2
 fi
 (
  cd "$OUT"
  sha256sum images/linux-0.01-floppy-1440k.img images/linux-0.01-ide-master-placeholder.img images/linux-0.01-hda.img.gz vendor/v86/{libv86.js,v86.wasm,seabios.bin,vgabios.bin} > SHA256SUMS
- if [[ -s images/slackware-1.01-1993.raw.gz ]]; then sha256sum images/linux-0.99.12-floppy.img images/slackware-1.01-1993.raw.gz >> SHA256SUMS; fi
+ if [[ -s images/slackware-1.01-1993.raw.gz.part-000 ]]; then sha256sum images/linux-0.99.12-floppy.img images/slackware-1.01-1993.raw.gz.part-* >> SHA256SUMS; fi
 )
 if find "$OUT" -type f -size +25M -print | grep -q .; then
  echo "ERROR: Bundle contains a file larger than 25 MiB:" >&2
