@@ -30,20 +30,25 @@ for key in keys:
 p.write_text(s)
 print("Disabled legacy network drivers:",", ".join(keys))
 PY
-docker run --rm --platform linux/amd64 --user "$(id -u):$(id -g)" -v "$SRC:/src" -w /src ubuntu:20.04 bash -euc '
+docker run --rm --platform linux/amd64 \
+ -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
+ -v "$SRC:/src" -w /src ubuntu:20.04 bash -euc '
  export DEBIAN_FRONTEND=noninteractive
  apt-get update -qq
- apt-get install -y -qq --no-install-recommends build-essential bin86 bc libc6-dev-i386 gcc-multilib make binutils >/dev/null
- make clean
- make dep
- make -j2
- test -s zImage
+ apt-get install -y -qq --no-install-recommends build-essential bin86 bc libc6-dev-i386 gcc-multilib make binutils util-linux >/dev/null
+ # Drop root privileges for the build, preserving host file ownership.
+ setpriv --reuid="$HOST_UID" --regid="$HOST_GID" --clear-groups bash -euc "
+  make clean
+  make dep
+  make -j2
+  test -s zImage
+ "
 '
 # Build new boot floppy atomically; root device /dev/hda1 = major 3, minor 1.
 TMP="$FLOPPY.new"
 truncate -s 1474560 "$TMP"
 dd if="$SRC/zImage" of="$TMP" conv=notrunc status=none
-printf '\\x01\\x03' | dd of="$TMP" bs=1 seek=508 conv=notrunc status=none
+printf '\x01\x03' | dd of="$TMP" bs=1 seek=508 conv=notrunc status=none
 mv "$TMP" "$FLOPPY"
 echo "Rebuilt 1993 floppy: $FLOPPY"
 echo "Previous working image: $FLOPPY.before-v86-netfix"
