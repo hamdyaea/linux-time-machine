@@ -5,7 +5,8 @@ set -Eeuo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SRC="$ROOT/.work/linux-1993/linux-evocation"
 FLOPPY="$ROOT/.work/linux-1993/linux-0.99.12-floppy.img"
-[[ -s "$SRC/.config" && -s "$SRC/zImage" && -s "$FLOPPY" ]] || { echo "Missing existing 1993 build; run prepare-linux-1993.sh first" >&2; exit 1; }
+[[ -s "$SRC/.config" && -s "$SRC/Makefile" && -s "$FLOPPY" ]] || { echo "Missing 1993 source configuration or boot floppy; check .work/linux-1993" >&2; exit 1; }
+# zImage is intentionally NOT required: make clean removes it before recompilation.
 command -v docker >/dev/null || { echo "Docker is required" >&2; exit 1; }
 if [[ ! -w "$SRC/.config" || ! -w "$SRC" ]]; then
  echo "Fixing ownership of Docker-generated kernel build files..." >&2
