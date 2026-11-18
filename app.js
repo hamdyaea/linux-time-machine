@@ -126,7 +126,7 @@ function setEra(next){
  if(!Object.hasOwn(eras,next))return;
  year=next;reset();updateKernelPanel();updateTemporalEngine();
  const realHome=$("#real-linux-home"),historicalShell=$("#console-shell");
- if(realHome){realHome.hidden=year!=="1991"&&year!=="1993"&&year!=="1998";realHome.dataset.guestYear=year;}
+ if(realHome){realHome.hidden=!realKernelEras.has(year);realHome.dataset.guestYear=year;}
  if(historicalShell)historicalShell.hidden=realKernelEras.has(year);
  const facts1991=$("#linux001-facts"),facts1993=$("#linux1993-facts"),guestTitle=$("#real-linux-guest-title"),guestHint=$("#real-linux-hint");
  if(facts1991)facts1991.hidden=year!=="1991";
