@@ -93,6 +93,12 @@ for path in SITE_PATHS:
     )
     check(bool(doc.title.strip()), f"{path}: title present ({doc.title.strip()})")
     check(bool(meta_value(doc, "name", "description")), f"{path}: meta description present")
+    if path == "/":
+        check(bool(meta_value(doc, "property", "og:title")), "homepage: Open Graph title")
+        image_url = meta_value(doc, "property", "og:image")
+        check(image_url.startswith(BASE + "/assets/"), "homepage: Open Graph image URL")
+        check(bool(meta_value(doc, "name", "twitter:card")), "homepage: Twitter card metadata")
+        check('application/ld+json' in body.decode("utf-8", "replace"), "homepage: JSON-LD structured data")
     check(canonical == BASE + path, f"{path}: canonical URL is {canonical!r}")
     robots = meta_value(doc, "name", "robots")
     check("noindex" not in robots.lower(), f"{path}: not marked noindex")
