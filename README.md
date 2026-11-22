@@ -2,7 +2,7 @@
 
 **Travel through Linux history — from Linux 0.01 in 1991 to the modern Linux desktop, directly in your browser.**
 
-Linux Time Machine is an **open-source, interactive Linux history project**. Explore historic x86 Linux guest environments through browser-based emulation, experiment with era-inspired terminal commands and discover how Linux evolved across nine milestones. No operating system installation is required.
+Linux Time Machine is an **open-source, interactive Linux history project**. Explore historic x86 Linux guest environments through browser-based emulation, experiment with era-inspired terminal commands and discover how Linux evolved across the decades. No operating system installation is required.
 
 **[Launch Linux Time Machine](https://linuxtimemachine.org/)** · **[Watch the official video](https://youtu.be/GdhBmuVOcXc)** · **[About the project](https://linuxtimemachine.org/about)** · **[Meet the developer](https://linuxtimemachine.org/developer)**
 
