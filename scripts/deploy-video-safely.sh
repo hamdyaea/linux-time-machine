@@ -62,6 +62,9 @@ if start_tag in home:
 home = home.replace('<a href="#watch-demo">WATCH DEMO</a>', "")
 if embed in home or 'id="watch-demo"' in home:
     raise SystemExit("REFUSING: video remains on the homepage")
+home, home_css_count = re.subn(r'<link rel="stylesheet" href="/style\.css\?v=[^"]+">', '<link rel="stylesheet" href="/style.css?v=20261122-nav5-visible">', home, count=1)
+if home_css_count != 1:
+    raise SystemExit("REFUSING: homepage stylesheet link missing")
 homepage.write_text(home, encoding="utf-8")
 
 # Insert the video on About and remove any stale link to the homepage video.
@@ -88,6 +91,9 @@ if nav_count != 1:
     raise SystemExit("REFUSING: About navigation missing")
 if about.count(nav) != 1:
     raise SystemExit("REFUSING: About navigation mismatch")
+about, about_css_count = re.subn(r'<link rel="stylesheet" href="/style\.css\?v=[^"]+">', '<link rel="stylesheet" href="/style.css?v=20261122-nav5-visible">', about, count=1)
+if about_css_count != 1:
+    raise SystemExit("REFUSING: About stylesheet link missing")
 about_file.write_text(about, encoding="utf-8")
 
 # Keep styling from the existing deployment if available, otherwise add it.
@@ -103,6 +109,9 @@ if ".demo-video iframe" not in css:
 .demo-caption a{color:#67e3f8;text-decoration:underline}
 @media(max-width:650px){.demo-section{margin:45px 0 58px}.demo-video{border-radius:8px}.demo-caption{font-size:12px}}
 '''
+css_file.write_text(css, encoding="utf-8")
+if "/* Keep the five historical navigation" not in css:
+    css += "\n/* Keep the five historical navigation links visible and consistent on every viewport. */\n@media (max-width:1050px) {\n  .site-header { height:auto; min-height:90px; flex-wrap:wrap; row-gap:12px; padding-top:14px; padding-bottom:14px; }\n  .site-header .header-links { width:100%; justify-content:center; flex-wrap:wrap; gap:10px 18px; }\n  .site-header .header-links a,\n  .site-header .header-links a:first-child,\n  .site-header .header-links a:nth-child(2),\n  .site-header .header-links a[href=\"/about.html\"] { display:inline-flex; font-size:11px; }\n}\n@media (max-width:650px) {\n  .site-header { padding:14px 12px; justify-content:center; }\n  .site-header .brand { margin-inline:auto; }\n  .site-header .header-links { gap:9px 14px; }\n  .site-header .header-links a,\n  .site-header .header-links a:first-child,\n  .site-header .header-links a:nth-child(2),\n  .site-header .header-links a[href=\"/about.html\"] { display:inline-flex; font-size:10px; letter-spacing:.08em; }\n}\n"
     css_file.write_text(css, encoding="utf-8")
 
 # CSP: enable only About pages to frame youtube-nocookie.com.
