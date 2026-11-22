@@ -23,7 +23,9 @@ Linux Time Machine has **two distinct types of experiences**:
 
 The landing page integrates keyboard-driven terminal exploration, suggestions for commands, a timeline, historical explanations and an x86 emulator display for selected early eras. On narrow screens, the site can present an interactive command experience where an x86 guest is not available.
 
-**Historical accuracy and boot status.** The published JavaScript defines the browser guests, but *this repository does not include the large guest disks or the v86 binaries*. Those are generated or staged locally during packaging and deployed separately. A source-tree inspection alone therefore cannot establish whether a particular public VM currently boots. Verify actual browser operation on the production URL before describing a specific VM as fully tested. A JavaScript-rendered prompt or printed `uname` version is not proof of a running kernel.
+## Historical accuracy
+
+The published JavaScript defines the browser guests, but *this repository does not include the large guest disks or the v86 binaries*. Those are generated or staged locally during packaging and deployed separately. A source-tree inspection alone therefore cannot establish whether a particular public VM currently boots. Verify actual browser operation on the production URL before describing a specific VM as fully tested. A JavaScript-rendered prompt or printed `uname` version is not proof of a running kernel.
 
 ## Developer
 
