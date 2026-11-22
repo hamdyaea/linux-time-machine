@@ -1,6 +1,6 @@
 # Real Linux 0.01 boot track
 
-Linux Time Machine aims to boot Linux 0.01 in an x86 browser emulator.
+Linux Time Machine includes a browser x86 boot integration for compatibility-patched historical Linux kernels. The original 1991 experiment grew into multiple guest configurations; this document preserves its reproducible build and diagnostic steps.
 
 ## Step 1 — Build and verify the guest
 
@@ -32,7 +32,7 @@ The front end can remain on Cloudflare Pages. Place verified boot media and v86 
 
 ## Status
 
-The **build workflow** is committed. No successful Linux 0.01 guest boot has been verified in the ChatGPT environment: this environment has neither a working network git clone nor QEMU/Docker. A browser VM must not be presented as running Linux 0.01 until the boot test actually succeeds.
+The **build workflow** and v86 guest integration are committed. The landing page and `vm.js` configure Linux 0.01 (1991), Linux 0.99.12/Slackware 1.01 (1993), Red Hat 5.2 (1998), and a 2004 Ubuntu-era recreation. Their VM assets are external to Git, so the public deployment must be tested in a real browser before any claim that a particular guest successfully boots. This documentation does not assert a new successful boot test.
 
 ## Browser proof of concept (added)
 
@@ -60,4 +60,4 @@ Open **http://localhost:8000/vm.html**. Press **POWER ON** and inspect actual VG
 
 If the VM fails to boot, inspect the developer console and compare QEMU's floppy and IDE configuration with v86 device support. Linux 0.01 may require v86 CPU/BIOS fixes. A successful QEMU boot is not proof of a successful v86 boot.
 
-**Deployment:** the images and emulator binary are deliberately gitignored (the IDE disk may be large). They must be explicitly packaged with the Cloudflare Pages deployment output after a successful browser test. Until then, the public `vm.html` is a development harness and may report missing assets.
+**Deployment:** the images and emulator binary are deliberately gitignored (the IDE disk may be large). They must be explicitly packaged with the Cloudflare Pages deployment output after a successful browser test. A plain Git checkout may report missing assets, even when a separately bundled production deployment works. Never replace a working Pages deployment with a source-only build.
