@@ -1,42 +1,47 @@
 # Linux Time Machine
 
-**The past is open source.** Travel through the evolution of Linux, from the first kernel release in 1991 to today's graphical desktops and beyond.
+**The past is open source.** Explore historical Linux kernels, retro desktops, and the evolution of the operating system in your browser.
 
-**Website:** https://linux-time-machine.pages.dev/  
-**Project domain:** https://linuxtimemachine.org/  
-**Source:** https://github.com/hamdyaea/linux-time-machine
+**Official website:** https://linuxtimemachine.org/  
+**Source code:** https://github.com/hamdyaea/linux-time-machine  
+**Created and maintained by:** [Hamdy Abou El Anein](https://linuxtimemachine.org/developer)
 
-## Explore Linux history
+## What can you explore?
 
-- **1991 — Linux 0.01:** the first kernel sources and early i386 architecture
-- **1993 — Early distributions:** Slackware, Debian, and the command line
-- **1998 — KDE 1.0:** the graphical desktop revolution
-- **2004 — Ubuntu 4.10:** Linux reaches a wider desktop audience
-- **2010 — Cloud and mobile:** Android, virtualization and emerging cloud platforms
-- **2015 — Container revolution:** Docker, Kubernetes and application portability
-- **2020 — Cloud native:** eBPF, observability and infrastructure at scale
-- **2024 — Linux 6.x:** Modern kernel development and Rust support
-- **Today — Modern Linux:** open-source infrastructure and desktop environments
+Linux Time Machine has **two distinct types of experiences**:
 
-The site features an interactive terminal with period-inspired prompts, command history, tab completion, a black-and-green CRT display, a time-travel portal, and commands selected for each era.
+1. **Historical x86 guest environments:** the site is configured to boot real historical Linux kernels and period systems through the [v86](https://github.com/copy/v86) browser emulator. These require separately packaged BIOS, WASM and disk-image assets. The Linux 0.01 and Linux 0.99.12 kernels use compatibility patches to run with newer toolchains/emulation.
+2. **Interactive historical reconstructions:** later eras use educational terminal and desktop recreations. They are *not* original running operating systems and should not be confused with the emulated x86 guests.
+
+| Era | Experience | Technical distinction |
+| --- | --- | --- |
+| **1991 — Linux 0.01** | Browser x86 guest configuration | Compatibility-patched Linux 0.01-derived kernel with a period-style disk environment |
+| **1993 — Slackware 1.01** | Browser x86 guest configuration | Linux 0.99.12 kernel and period Slackware disk |
+| **1998 — Red Hat 5.2** | Browser x86 guest configuration | Historical Red Hat x86 disk image |
+| **2004 — Ubuntu era** | Browser x86 guest configuration | Ubuntu-era recreation; not represented as an unchanged original Ubuntu 4.10 installation |
+| **2010 → today** | Interactive reconstructions | Era-themed Linux history, terminal commands, desktop presentations and context |
+
+The landing page integrates keyboard-driven terminal exploration, suggestions for commands, a timeline, historical explanations and an x86 emulator display for selected early eras. On narrow screens, the site can present an interactive command experience where an x86 guest is not available.
+
+**Historical accuracy and boot status.** The published JavaScript defines the browser guests, but *this repository does not include the large guest disks or the v86 binaries*. Those are generated or staged locally during packaging and deployed separately. A source-tree inspection alone therefore cannot establish whether a particular public VM currently boots. Verify actual browser operation on the production URL before describing a specific VM as fully tested. A JavaScript-rendered prompt or printed `uname` version is not proof of a running kernel.
 
 ## Developer
 
-**Hamdy Abou El Anein** — creator, lead developer, and maintainer.
+**Hamdy Abou El Anein** — creator, lead developer and maintainer. Senior Linux Systems Engineer, open-source developer and technical educator based in Switzerland.
 
-Senior Linux System Engineer · Open-source developer · Cybersecurity specialist.
+- Developer profile: https://linuxtimemachine.org/developer
+- Project background: https://linuxtimemachine.org/about
+- GitHub: https://github.com/hamdyaea
+- Daylight Linux: https://daylightlinux.ch
+- Email: info@daylightlinux.ch
 
-- **GitHub:** https://github.com/hamdyaea
-- **Daylight Linux:** https://daylightlinux.ch\n- **Email:** info@daylightlinux.ch\n- **Developer page:** https://linux-time-machine.pages.dev/developer.html\n- **About page:** https://linux-time-machine.pages.dev/about.html
-- **Linux Time Machine:** https://linux-time-machine.pages.dev/
-
-Contributions, historical research, testing, and suggestions are welcome through GitHub issues and pull requests.
+Contributions, historical research, reproducible boot reports, testing and suggestions are welcome through GitHub issues and pull requests.
 
 ## Technology
 
-HTML5, CSS3, and vanilla JavaScript. Static hosting on Cloudflare Pages. Accessible keyboard navigation and reduced-motion support.
+HTML5, CSS3, vanilla JavaScript, [v86](https://github.com/copy/v86) for x86 guest emulation, and Cloudflare Pages for static hosting. Historical disk media may be served from bundled Pages assets or an externally configured disk endpoint.
 
-## Run locally
+## Run the static front end locally
 
 ```bash
 git clone https://github.com/hamdyaea/linux-time-machine.git
@@ -44,48 +49,25 @@ cd linux-time-machine
 python3 -m http.server 8000
 ```
 
-Open http://localhost:8000.
+Open http://localhost:8000. **This static checkout does not include the guest disk images or v86 runtime**, so real VM boot requires the separate preparation steps documented in [the boot engineering guide](docs/REAL_KERNEL_BOOT.md).
 
-## Deploy to Cloudflare Pages
+## Packaging and deployment
 
-Connect the GitHub repository to Cloudflare Pages, select the **main** branch, choose **None** as the framework preset, leave the build command blank, and set the output directory to the repository root (`/`).
+The production guest images are not stored in Git; they are deliberately excluded due to their size and third-party components. `scripts/package-real-kernel-site.sh` assembles HTML, JavaScript, emulator assets and prepared disk images into a static deployable directory.
 
-## Historical sources and future development
+**Do not replace a working production deployment with a plain Git checkout or a default Git-based Cloudflare Pages build.** Such a deployment can omit existing VM assets and cause historical machines to stop booting. First rebuild the complete bundle, preserve the current deployed disk assets, validate 1991/1993/1998/2004 browser boots where applicable, and publish the verified bundle using the established Cloudflare Pages direct-upload workflow.
 
-- Linux historical source archives: https://www.kernel.org/pub/linux/kernel/Historic/
-- Linux kernel source history: https://kernel.googlesource.com/pub/scm/linux/kernel/git/nico/archive/
-- v86 x86 browser emulator: https://github.com/copy/v86
+SEO files (`robots.txt`, `sitemap.xml` and the social preview) must also be included in that packaged deployment. See [SEO deployment and verification](docs/SEO_DEPLOYMENT.md).
 
-The [Linux 0.01 boot engineering track](docs/REAL_KERNEL_BOOT.md) includes a reproducible kernel build workflow and the steps for testing an x86 browser boot. Upcoming work also covers richer desktop interactions, expanded command support, and additional milestones.
+## References
 
-## License
+- [Historic Linux kernel archives](https://www.kernel.org/pub/linux/kernel/Historic/)
+- [Linux source history](https://kernel.googlesource.com/pub/scm/linux/kernel/git/nico/archive/)
+- [v86 browser x86 emulator](https://github.com/copy/v86)
+- [Linux 0.01 boot engineering notes](docs/REAL_KERNEL_BOOT.md)
 
-Copyright © 2026 **Hamdy Abou El Anein** and contributors.
+## License and attribution
 
-Released under the [MIT License](LICENSE). Historical third-party software, distribution images, and trademarks remain subject to their respective rights and licenses.
+Copyright © 2026 **Hamdy Abou El Anein** and contributors. Released under the [MIT License](LICENSE).
 
-Linux is a trademark of Linus Torvalds. Linux Time Machine is an independent open-source project.
-
-## Real historical kernels (priority)
-
-The early text-only eras should eventually boot period-correct Linux kernels, with matching root filesystems, directly in the browser. The current JavaScript historical shell is **not a real kernel** and must not be mistaken for one.
-
-| Era | Real-kernel progress |
-| --- | --- |
-| 1991 | Linux 0.01-derived compatibility port boots in QEMU on the developer workstation. v86/browser boot **not verified**. |
-| 1993 | Matching kernel and Slackware/Debian root filesystem **not prepared**. |
-| 1998 onward | Interactive desktop/history experiences; authentic VM images may be added only after technical and licensing review. |
-
-The 1991 experimental guest requires a boot floppy, a matching IDE root disk, v86 WebAssembly, SeaBIOS and VGA BIOS. All binaries are gitignored and therefore **not present in a standard Cloudflare Pages Git deployment**.
-
-Build and test the guest following [the real-kernel boot guide](docs/REAL_KERNEL_BOOT.md). After the local v86 test succeeds, run:
-
-```bash
-bash scripts/package-real-kernel-site.sh
-cd .work/pages-dist
-python3 -m http.server 8000
-```
-
-Open `http://localhost:8000/vm.html?era=1991` and validate that the guest boots and accepts shell commands. Only then deploy the bundled static output with an appropriate Cloudflare Pages direct-upload process. Replacing the deployment workflow requires care: a Git-connected Pages project does not automatically include local generated images.
-
-Historical kernel claims are based on the actual booted binary, not on the displayed `uname` text alone.
+Historical third-party kernels, distributions, emulator software, disk images and trademarks retain their respective licenses and attribution requirements. Linux is a trademark of Linus Torvalds. Linux Time Machine is an independent open-source project.
