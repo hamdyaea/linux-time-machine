@@ -1,11 +1,22 @@
 # Linux Time Machine
 
-**The past is open source.** Explore historical Linux kernels, retro desktops, and the evolution of the operating system in your browser.
+**Travel through Linux history — from Linux 0.01 in 1991 to the modern Linux desktop, directly in your browser.**
 
-**Official website:** https://linuxtimemachine.org/  
-**Source code:** https://github.com/hamdyaea/linux-time-machine  
-**Created and maintained by:** [Hamdy Abou El Anein](https://linuxtimemachine.org/developer)
-**Official video:** [Watch Linux Time Machine (1991–Today) on YouTube](https://youtu.be/GdhBmuVOcXc)
+Linux Time Machine is an **open-source, interactive Linux history project**. Explore historic x86 Linux guest environments through browser-based emulation, experiment with era-inspired terminal commands and discover how Linux evolved across nine milestones. No operating system installation is required.
+
+**[Launch Linux Time Machine](https://linuxtimemachine.org/)** · **[Watch the official video](https://youtu.be/GdhBmuVOcXc)** · **[About the project](https://linuxtimemachine.org/about)** · **[Meet the developer](https://linuxtimemachine.org/developer)**
+
+[![Watch the Linux Time Machine project video on YouTube](https://img.youtube.com/vi/GdhBmuVOcXc/hqdefault.jpg)](https://youtu.be/GdhBmuVOcXc)
+
+*Official video: real screenshots from the project. The historical x86 guests are distinct from the later educational recreations.*
+
+## Try it in three steps
+
+1. Open **[linuxtimemachine.org](https://linuxtimemachine.org/)** on a desktop or mobile browser.
+2. Select an era from **1991 to today** in the timeline.
+3. Explore the interactive terminal. On supported desktop browsers, try the historical x86 guest environments; on mobile, use the site's interactive command experience where VM execution is unavailable.
+
+The site includes a retro-futuristic cockpit, historical context, era-specific command suggestions, and a timeline you can navigate without installing a VM locally.
 
 ## What can you explore?
 
@@ -24,13 +35,22 @@ Linux Time Machine has **two distinct types of experiences**:
 
 The landing page integrates keyboard-driven terminal exploration, suggestions for commands, a timeline, historical explanations and an x86 emulator display for selected early eras. On narrow screens, the site can present an interactive command experience where an x86 guest is not available.
 
+## Who is this for?
+
+- **Linux enthusiasts:** revisit early kernels, distributions and the evolution of the desktop.
+- **Retro-computing fans:** explore the constraints and feel of historic x86 environments.
+- **Students and educators:** compare key milestones, terminal interfaces and modern recreations.
+- **Engineers and contributors:** inspect the open-source implementation and help reproduce, test or improve historical boots.
+
+**See it in action:** [Watch the 1991–today walkthrough on YouTube](https://youtu.be/GdhBmuVOcXc), then [try the project yourself](https://linuxtimemachine.org/).
+
 ## Historical accuracy
 
 The published JavaScript defines the browser guests, but *this repository does not include the large guest disks or the v86 binaries*. Those are generated or staged locally during packaging and deployed separately. A source-tree inspection alone therefore cannot establish whether a particular public VM currently boots. Verify actual browser operation on the production URL before describing a specific VM as fully tested. A JavaScript-rendered prompt or printed `uname` version is not proof of a running kernel.
 
 ## Developer
 
-**Hamdy Abou El Anein** — creator, lead developer and maintainer. Senior Linux Systems Engineer, open-source developer and technical educator based in Switzerland.
+**Hamdy Abou El Anein** — creator, lead developer and maintainer. Senior Linux Systems Engineer, open-source developer and technical educator based in Switzerland. This project showcases Linux kernel history, x86 emulation, browser interfaces and hands-on compatibility engineering.
 
 - Developer profile: https://linuxtimemachine.org/developer
 - Project background: https://linuxtimemachine.org/about
