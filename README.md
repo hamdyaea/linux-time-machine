@@ -5,6 +5,7 @@
 **Official website:** https://linuxtimemachine.org/  
 **Source code:** https://github.com/hamdyaea/linux-time-machine  
 **Created and maintained by:** [Hamdy Abou El Anein](https://linuxtimemachine.org/developer)
+**Official video:** [Watch Linux Time Machine (1991–Today) on YouTube](https://youtu.be/GdhBmuVOcXc)
 
 ## What can you explore?
 
