@@ -81,6 +81,13 @@ if 'id="watch-demo"' not in about:
     about = about.replace(marker, section + marker, 1)
 if about.count(embed) != 1:
     raise SystemExit("REFUSING: About video is missing or duplicated")
+# Keep the historical five-link header on About, pointing to the terminal homepage.
+nav = '''<nav class="header-links"><a href="/#timeline">TIMELINE</a><a href="/#terminal-section">TERMINAL</a><a href="/developer.html">DEVELOPER</a><a href="/about.html">ABOUT</a><a href="https://github.com/hamdyaea/linux-time-machine" target="_blank" rel="noopener noreferrer">SOURCE ↗</a></nav>'''
+about, nav_count = re.subn(r'<nav class="header-links">[\\s\\S]*?</nav>', lambda _: nav, about, count=1)
+if nav_count != 1:
+    raise SystemExit("REFUSING: About navigation missing")
+if about.count(nav) != 1:
+    raise SystemExit("REFUSING: About navigation mismatch")
 about_file.write_text(about, encoding="utf-8")
 
 # Keep styling from the existing deployment if available, otherwise add it.
